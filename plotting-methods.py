@@ -100,13 +100,44 @@ def plot_on_map(data, longitude, latitude, log=True):
 
 
 
+'''
+to use:
+-must install all the librarys and import:
+ 
+import h5py
+import xarray as xr
+ 
+- must extract the file from the path:
+ 
+k = "YOUR PATH TO THE FILE"
+b = xr.open_dataset(k, phony_dims='sort')
+ 
+- must define the payload sensor that u want to use.
+- example:
+ 
+X_Waveform = b['A111_W'][...]
+ 
+-must define verse time:
+ 
+relative_time = b['VERSE_TIME'][...]
+(May be different depending on the payload!)
+ 
+-call the function like this:
+ 
+plot_against_verse_time(b, relative_time)
+ 
+-If u want the plot in linear form:
+ 
+plot_against_verse_time(b, relative_time, False)
+'''
 def plot_against_verse_time(data, verse_time, log=True):
+    #catch all problems with frequency
     try:
         freq = data.shape[1]
     except:
         freq = 1
-
-    
+ 
+    #catch all problems with units
     unit = ""
     try:
         unit = data.Unit  # Try accessing 'Unit' attribute
@@ -115,28 +146,41 @@ def plot_against_verse_time(data, verse_time, log=True):
             unit = data.units  # If 'Unit' attribute is not found, try 'unit' attribute
         except AttributeError:
             pass  # If neither attribute is found, do nothing
+    verse_time_unit = ""
+    try:
+        verse_time_unit = verse_time.Unit  # Try accessing 'Unit' attribute
+    except AttributeError:
+        try:
+            verse_time_unit = verse_time.units  # If 'Unit' attribute is not found, try 'unit' attribute
+        except AttributeError:
+            pass  # If neither attribute is found, do nothing
    
-   
- 
+   #catch all problems with titles
     name = ""
     try:
         name = data.long_name
     except:
         pass
  
+    #remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
     data=data.values[1:].flatten()
  
+    #do the same with the verse time
     verse_time = verse_time.values[1:]
+    #get the length to be able to plot it
     len_time = len(verse_time)
+ 
+    #plot everything
     vers_extend = np.concatenate([np.linspace(verse_time[i], verse_time[i+1], freq, endpoint=False) for i in range(len_time-1)])
     vers_extend = np.concatenate([vers_extend, np.linspace(verse_time[-2], verse_time[-1], freq)])
  
- 
+    #define the parameters
     plt.figure(figsize=(8,6))
     plt.title(name)
     plt.plot(vers_extend, data)
+    #select if the scale is linear or logarithmic
     if log==True:
-        plt.yscale('log')   
-    plt.ylabel(unit)
-    plt.xlabel("ms")
+        plt.yscale('log')  
+    plt.ylabel(unit) #plot data units
+    plt.xlabel(verse_time_unit) #may not be ms
     plt.show()
