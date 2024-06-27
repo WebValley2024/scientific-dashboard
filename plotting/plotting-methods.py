@@ -97,8 +97,8 @@ def plot_on_map(data, longitude, latitude, log=True):
     plt.show()
  
 
-k = "data/CSES_01_EFD_1_L02_A1_213330_20211206_164953_20211206_172707_000.h5"
-b = xr.open_dataset(k, phony_dims='sort')
+#k = "data/CSES_01_EFD_1_L02_A1_213330_20211206_164953_20211206_172707_000.h5"
+#b = xr.open_dataset(k, phony_dims='sort')
 
 
 
@@ -169,7 +169,7 @@ def plot_against_verse_time(data, verse_time, log=True):
     data=data.values[1:].flatten()
  
     #do the same with the verse time
-    verse_time = verse_time.values[1:]
+    verse_time = verse_time.values[1:].flatten()
     #get the length to be able to plot it
     len_time = len(verse_time)
  
@@ -281,3 +281,68 @@ def plot_spectrum(data, verse_time, log=True, colormap='viridis'):
 
     # show the plot
     plt.show()
+
+
+"""
+this is still in progress: used as the other methods above. however here we only plot data till the index
+ix you can set in the code. if this index is too large, the machine crashes and it takes forever to calculate.
+TODO: decide how we want to deal with this. plotting only 1 point per second? 2? We could also hand this over 
+as a parameter I guess.
+"""
+def plot_against_utc(data, time):
+
+    def convert_to_utc_time(date_strings):
+        utc_times = pd.to_datetime(date_strings, format="%Y%m%d%H%M%S%f", utc=True)
+        return utc_times
+
+    # catch all problems with frequency
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+    # catch all problems with units
+    unit = ""
+    try:
+        unit = data.Unit  # Try accessing 'Unit' attribute
+    except AttributeError:
+        try:
+            unit = data.units  # If 'Unit' attribute is not found, try 'unit' attribute
+        except AttributeError:
+            pass  # If neither attribute is found, do nothing
+    verse_time_unit = ""
+    # catch all problems with titles
+    name = ""
+    try:
+        name = data.long_name
+    except:
+        pass
+    # remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data = data.values[1:].flatten()
+    # do the same with the verse time
+    time = time.values[1:].flatten()
+
+    len_time = len(time)
+    time_extend = np.concatenate(
+        [
+            np.linspace(time[i], time[i + 1], freq, endpoint=False)
+            for i in range(len_time - 1)
+        ]
+    )
+    time_extend = np.concatenate([time_extend, np.linspace(time[-2], time[-1], freq)])
+    utctimes = convert_to_utc_time(time_extend)
+
+    ix = 3000 #3000000
+
+    dd = pd.DataFrame({
+        "data": data[:ix],
+        "time": utctimes[:ix]
+    })
+
+    dd.plot(x="time", y="data")
+
+
+
+
+
+
+    
