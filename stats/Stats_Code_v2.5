@@ -5,19 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import skew, kurtosis, t
 import os
+import streamlit as st
 
-# Function to perform statistical analysis and plot heatmaps
-def basic_statistical_analysis_and_plot(file_path, sensor_names, selected_stats):
-    if not os.path.isfile(file_path):
-        print(f"Error: File {file_path} does not exist.")
-        return None
-
-    try:
-        ds = xr.open_dataset(file_path, engine='h5netcdf', phony_dims='sort')
-    except Exception as e:
-        print(f"Error opening file: {e}")
-        return None
-
+def basic_statistical_analysis_and_plot(ds, sensor_names, selected_stats):
     # Dictionary to store statistics
     stats = {}
 
@@ -46,9 +36,9 @@ def basic_statistical_analysis_and_plot(file_path, sensor_names, selected_stats)
                 # Store the selected statistics
                 stats[sensor_name] = {stat: stats_functions[stat](data) for stat in selected_stats}
             else:
-                print(f"Variable {sensor_name} is not numeric or has unsupported data type.")
+                st.write(f"Variable {sensor_name} is not numeric or has unsupported data type.")
         else:
-            print(f"Variable {sensor_name} is not found in the dataset.")
+            st.write(f"Variable {sensor_name} is not found in the dataset.")
 
     # Create separate heatmaps for each sensor
     for sensor_name, stat_values in stats.items():
@@ -63,73 +53,52 @@ def basic_statistical_analysis_and_plot(file_path, sensor_names, selected_stats)
         plt.xticks(rotation=45)
         plt.yticks(rotation=0)
         plt.tight_layout()
-        plt.show()
+        st.pyplot(plt)
+        plt.close()
 
     return stats
 
 def main():
-    file_path = '/home/wvuser/DATA SET tutorial/webvalley2024_EP_tutorial/webvalley2024/WebValley 2024 Challenge 2/CSES_01_LAP_1_L02_A3_174201_20210324_070216_20210324_073942_000.h5'
+    st.title("Statistical Analysis and Visualization")
+
+    file_path = st.text_input("Enter the file path:", '/home/wvuser/DATA SET tutorial/webvalley2024_EP_tutorial/webvalley2024/WebValley 2024 Challenge 2/CSES_01_LAP_1_L02_A3_174201_20210324_070216_20210324_073942_000.h5')
 
     if not os.path.isfile(file_path):
-        print(f"Error: File {file_path} does not exist.")
+        st.error(f"Error: File {file_path} does not exist.")
         return
 
     try:
         ds = xr.open_dataset(file_path, engine='h5netcdf', phony_dims='sort')
     except Exception as e:
-        print(f"Error opening file: {e}")
+        st.error(f"Error opening file: {e}")
         return
 
     # List all available sensor names
     available_sensors = list(ds.data_vars.keys())
-    print("Available sensor names:")
-    for i, sensor in enumerate(available_sensors, 1):
-        print(f"{i}. {sensor}")
-
-    # Allow user to select sensor names or exit
-    while True:
-        selected_sensors_input = input("Enter the numbers of the sensor names you want to analyze, separated by commas (or type 'exit' to quit): ")
-        if selected_sensors_input.lower() == 'exit':
-            print("Exiting the program.")
-            return
-        try:
-            selected_sensors_indices = [int(i.strip()) - 1 for i in selected_sensors_input.split(",")]
-            selected_sensors = [available_sensors[i] for i in selected_sensors_indices]
-            break
-        except (ValueError, IndexError) as e:
-            print("Invalid input. Please enter the numbers corresponding to the sensor names, separated by commas.")
+    selected_sensors = st.multiselect("Select sensor names to analyze:", available_sensors)
 
     # List all available statistics
     available_stats = [
         'mean', 'median', 'std_dev', 'min', 'max', 'variance', 
         'skewness', 'kurtosis', 'conf_interval_low', 'conf_interval_high'
     ]
-    print("Available statistical calculations:")
-    for i, stat in enumerate(available_stats, 1):
-        print(f"{i}. {stat}")
+    selected_stats = st.multiselect("Select statistics to calculate:", available_stats)
 
-    # Allow user to select statistics or exit
-    while True:
-        selected_stats_input = input("Enter the numbers of the statistics you want to calculate, separated by commas (or type 'exit' to quit): ")
-        if selected_stats_input.lower() == 'exit':
-            print("Exiting the program.")
-            return
-        try:
-            selected_stats_indices = [int(i.strip()) - 1 for i in selected_stats_input.split(",")]
-            selected_stats = [available_stats[i] for i in selected_stats_indices]
-            break
-        except (ValueError, IndexError) as e:
-            print("Invalid input. Please enter the numbers corresponding to the statistics, separated by commas.")
+    if st.button("Analyze"):
+        if not selected_sensors:
+            st.error("Please select at least one sensor.")
+        elif not selected_stats:
+            st.error("Please select at least one statistical calculation.")
+        else:
+            stats = basic_statistical_analysis_and_plot(ds, selected_sensors, selected_stats)
 
-    stats = basic_statistical_analysis_and_plot(file_path, selected_sensors, selected_stats)
-
-    # Print the statistics
-    if stats is not None:
-        for sensor, stat_values in stats.items():
-            print(f"Statistics for {sensor}:")
-            for key, value in stat_values.items():
-                print(f"{key}: {value}")
-            print()
+            # Print the statistics
+            if stats:
+                for sensor, stat_values in stats.items():
+                    st.write(f"Statistics for {sensor}:")
+                    for key, value in stat_values.items():
+                        st.write(f"{key}: {value}")
+                    st.write("")
 
 if __name__ == "__main__":
     main()
