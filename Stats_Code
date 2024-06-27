@@ -1,0 +1,66 @@
+import xarray as xr
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+ 
+def basic_statistical_analysis_and_plot(file_path, sensor_names):
+    ds = xr.open_dataset(file_path, phony_dims='sort')
+ 
+    # Dictionary
+    stats = {}
+ 
+    for sensor_name in sensor_names:
+        if sensor_name in ds.data_vars:
+            data = ds[sensor_name].values.flatten()  # Flatten array
+ 
+            # Check if the data is numeric and contains finite values
+            if np.issubdtype(data.dtype, np.number):
+           
+                mean_val = np.nanmean(data)
+                median_val = np.nanmedian(data)
+                std_val = np.nanstd(data)
+                min_val = np.nanmin(data)
+                max_val = np.nanmax(data)
+ 
+                # Store the statistics
+                stats[sensor_name] = {
+                    'mean': mean_val,
+                    'median': median_val,
+                    'std_dev': std_val,
+                    'min': min_val,
+                    'max': max_val
+                }
+            else:
+                print(f"Variable {sensor_name} is not numeric or has unsupported data type.")
+        else:
+            print(f"Variable {sensor_name} is not found in the dataset.")
+ 
+    # Create a DataFrame f
+    stats_df = pd.DataFrame(stats).T
+    stats_df.index.name = 'Variable'
+ 
+    # Plot
+    for sensor_name in stats_df.index:
+        fig, ax = plt.subplots(figsize=(10, 6))
+        stats_df.loc[sensor_name].plot(kind='bar', ax=ax)
+        ax.set_title(f'Statistics for {sensor_name}')
+        ax.set_ylabel('Value')
+        ax.grid(True)
+        plt.show()
+ 
+    return stats_df
+ 
+def main():
+    file_path = '/home/wvuser/CSES_01_EFD_1_L02_A1_213330_20211206_164953_20211206_172707_000.h5'
+   
+    # Ask
+    sensor_names_input = input("Enter the sensor names you want to analyze, separated by commas: ")
+    sensor_names = [name.strip() for name in sensor_names_input.split(",")]
+ 
+    stats_df = basic_statistical_analysis_and_plot(file_path, sensor_names)
+ 
+    # Print the statistics
+    print(stats_df)
+ 
+if __name__ == "__main__":
+    main()
