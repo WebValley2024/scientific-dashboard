@@ -2,65 +2,126 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
- 
+from scipy.stats import skew, kurtosis, t
+import os
+
 def basic_statistical_analysis_and_plot(file_path, sensor_names):
-    ds = xr.open_dataset(file_path, phony_dims='sort')
- 
-    # Dictionary
+    if not os.path.isfile(file_path):
+        print(f"Error: File {file_path} does not exist.")
+        return None
+
+    try:
+        ds = xr.open_dataset(file_path, engine='h5netcdf', phony_dims='sort')
+    except Exception as e:
+        print(f"Error opening file: {e}")
+        return None
+
+    # Dictionary to store statistics
     stats = {}
- 
+
     for sensor_name in sensor_names:
         if sensor_name in ds.data_vars:
             data = ds[sensor_name].values.flatten()  # Flatten array
- 
+
             # Check if the data is numeric and contains finite values
             if np.issubdtype(data.dtype, np.number):
-           
+                data = data[np.isfinite(data)]  # Remove infinite values
+
                 mean_val = np.nanmean(data)
                 median_val = np.nanmedian(data)
                 std_val = np.nanstd(data)
                 min_val = np.nanmin(data)
                 max_val = np.nanmax(data)
- 
+                var_val = np.nanvar(data)
+                skew_val = skew(data, nan_policy='omit')
+                kurt_val = kurtosis(data, nan_policy='omit')
+                n = len(data)
+                se = std_val / np.sqrt(n)
+                ci = t.interval(0.95, n-1, loc=mean_val, scale=se)
+
                 # Store the statistics
                 stats[sensor_name] = {
                     'mean': mean_val,
                     'median': median_val,
                     'std_dev': std_val,
                     'min': min_val,
-                    'max': max_val
+                    'max': max_val,
+                    'variance': var_val,
+                    'skewness': skew_val,
+                    'kurtosis': kurt_val,
+                    'conf_interval_low': ci[0],
+                    'conf_interval_high': ci[1]
                 }
             else:
                 print(f"Variable {sensor_name} is not numeric or has unsupported data type.")
         else:
             print(f"Variable {sensor_name} is not found in the dataset.")
- 
-    # Create a DataFrame f
+
+    # Create a DataFrame
     stats_df = pd.DataFrame(stats).T
     stats_df.index.name = 'Variable'
- 
+
     # Plot
     for sensor_name in stats_df.index:
-        fig, ax = plt.subplots(figsize=(10, 6))
-        stats_df.loc[sensor_name].plot(kind='bar', ax=ax)
-        ax.set_title(f'Statistics for {sensor_name}')
-        ax.set_ylabel('Value')
-        ax.grid(True)
+        fig, axs = plt.subplots(2, 1, figsize=(10, 12))
+
+        # Bar plot for statistics
+        stats_df.loc[sensor_name].plot(kind='bar', ax=axs[0])
+        axs[0].set_title(f'Statistics for {sensor_name}')
+        axs[0].set_ylabel('Value')
+        axs[0].grid(True)
+
+        # Histogram plot for data distribution
+        data = ds[sensor_name].values.flatten()
+        data = data[np.isfinite(data)]  # Remove infinite values
+        axs[1].hist(data, bins=30, edgecolor='k', alpha=0.7)
+        axs[1].set_title(f'Histogram for {sensor_name}')
+        axs[1].set_xlabel('Value')
+        axs[1].set_ylabel('Frequency')
+        axs[1].grid(True)
+
+        plt.tight_layout()
         plt.show()
- 
+
     return stats_df
- 
+
 def main():
-    file_path = '/home/wvuser/CSES_01_EFD_1_L02_A1_213330_20211206_164953_20211206_172707_000.h5'
-   
-    # Ask
-    sensor_names_input = input("Enter the sensor names you want to analyze, separated by commas: ")
-    sensor_names = [name.strip() for name in sensor_names_input.split(",")]
- 
-    stats_df = basic_statistical_analysis_and_plot(file_path, sensor_names)
- 
+    file_path = '/home/wvuser/DATA SET tutorial/webvalley2024_EP_tutorial/webvalley2024/WebValley 2024 Challenge 2/CSES_01_LAP_1_L02_A3_174201_20210324_070216_20210324_073942_000.h5'
+
+    if not os.path.isfile(file_path):
+        print(f"Error: File {file_path} does not exist.")
+        return
+
+    try:
+        ds = xr.open_dataset(file_path, engine='h5netcdf', phony_dims='sort')
+    except Exception as e:
+        print(f"Error opening file: {e}")
+        return
+
+    # List all available sensor names
+    available_sensors = list(ds.data_vars.keys())
+    print("Available sensor names:")
+    for i, sensor in enumerate(available_sensors, 1):
+        print(f"{i}. {sensor}")
+
+    # Allow user to select sensor names or exit
+    while True:
+        selected_sensors_input = input("Enter the numbers of the sensor names you want to analyze, separated by commas (or type 'exit' to quit): ")
+        if selected_sensors_input.lower() == 'exit':
+            print("Exiting the program.")
+            return
+        try:
+            selected_sensors_indices = [int(i.strip()) - 1 for i in selected_sensors_input.split(",")]
+            selected_sensors = [available_sensors[i] for i in selected_sensors_indices]
+            break
+        except (ValueError, IndexError) as e:
+            print("Invalid input. Please enter the numbers corresponding to the sensor names, separated by commas.")
+
+    stats_df = basic_statistical_analysis_and_plot(file_path, selected_sensors)
+
     # Print the statistics
-    print(stats_df)
- 
+    if stats_df is not None:
+        print(stats_df)
+
 if __name__ == "__main__":
     main()
