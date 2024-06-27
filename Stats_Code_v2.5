@@ -6,7 +6,8 @@ import seaborn as sns
 from scipy.stats import skew, kurtosis, t
 import os
 
-def basic_statistical_analysis_and_plot(file_path, sensor_names):
+# Function to perform statistical analysis and plot heatmaps
+def basic_statistical_analysis_and_plot(file_path, sensor_names, selected_stats):
     if not os.path.isfile(file_path):
         print(f"Error: File {file_path} does not exist.")
         return None
@@ -20,6 +21,20 @@ def basic_statistical_analysis_and_plot(file_path, sensor_names):
     # Dictionary to store statistics
     stats = {}
 
+    # Dictionary to map statistics names to their respective calculation functions
+    stats_functions = {
+        'mean': np.nanmean,
+        'median': np.nanmedian,
+        'std_dev': np.nanstd,
+        'min': np.nanmin,
+        'max': np.nanmax,
+        'variance': np.nanvar,
+        'skewness': lambda x: skew(x, nan_policy='omit'),
+        'kurtosis': lambda x: kurtosis(x, nan_policy='omit'),
+        'conf_interval_low': lambda x: t.interval(0.95, len(x)-1, loc=np.nanmean(x), scale=np.nanstd(x)/np.sqrt(len(x)))[0],
+        'conf_interval_high': lambda x: t.interval(0.95, len(x)-1, loc=np.nanmean(x), scale=np.nanstd(x)/np.sqrt(len(x)))[1]
+    }
+
     for sensor_name in sensor_names:
         if sensor_name in ds.data_vars:
             data = ds[sensor_name].values.flatten()  # Flatten array
@@ -28,31 +43,8 @@ def basic_statistical_analysis_and_plot(file_path, sensor_names):
             if np.issubdtype(data.dtype, np.number):
                 data = data[np.isfinite(data)]  # Remove infinite values
 
-                mean_val = np.nanmean(data)
-                median_val = np.nanmedian(data)
-                std_val = np.nanstd(data)
-                min_val = np.nanmin(data)
-                max_val = np.nanmax(data)
-                var_val = np.nanvar(data)
-                skew_val = skew(data, nan_policy='omit')
-                kurt_val = kurtosis(data, nan_policy='omit')
-                n = len(data)
-                se = std_val / np.sqrt(n)
-                ci = t.interval(0.95, n-1, loc=mean_val, scale=se)
-
-                # Store the statistics
-                stats[sensor_name] = {
-                    'mean': mean_val,
-                    'median': median_val,
-                    'std_dev': std_val,
-                    'min': min_val,
-                    'max': max_val,
-                    'variance': var_val,
-                    'skewness': skew_val,
-                    'kurtosis': kurt_val,
-                    'conf_interval_low': ci[0],
-                    'conf_interval_high': ci[1]
-                }
+                # Store the selected statistics
+                stats[sensor_name] = {stat: stats_functions[stat](data) for stat in selected_stats}
             else:
                 print(f"Variable {sensor_name} is not numeric or has unsupported data type.")
         else:
@@ -66,7 +58,7 @@ def basic_statistical_analysis_and_plot(file_path, sensor_names):
         # Plot heatmap for current sensor
         plt.figure(figsize=(10, 6))
         sns.set(font_scale=1.2)  # Adjust font size
-        heatmap = sns.heatmap(stats_df, annot=True, cmap='viridis', fmt='.2f', linewidths=0.5, linecolor='white', cbar=True, annot_kws={"size": 5})
+        heatmap = sns.heatmap(stats_df, annot=True, cmap='viridis', fmt='.2f', linewidths=0.5, linecolor='white', cbar=True, annot_kws={"size": 8})
         plt.title(f'Statistical Metrics Heatmap for {sensor_name}', fontsize=16)
         plt.xticks(rotation=45)
         plt.yticks(rotation=0)
@@ -107,7 +99,29 @@ def main():
         except (ValueError, IndexError) as e:
             print("Invalid input. Please enter the numbers corresponding to the sensor names, separated by commas.")
 
-    stats = basic_statistical_analysis_and_plot(file_path, selected_sensors)
+    # List all available statistics
+    available_stats = [
+        'mean', 'median', 'std_dev', 'min', 'max', 'variance', 
+        'skewness', 'kurtosis', 'conf_interval_low', 'conf_interval_high'
+    ]
+    print("Available statistical calculations:")
+    for i, stat in enumerate(available_stats, 1):
+        print(f"{i}. {stat}")
+
+    # Allow user to select statistics or exit
+    while True:
+        selected_stats_input = input("Enter the numbers of the statistics you want to calculate, separated by commas (or type 'exit' to quit): ")
+        if selected_stats_input.lower() == 'exit':
+            print("Exiting the program.")
+            return
+        try:
+            selected_stats_indices = [int(i.strip()) - 1 for i in selected_stats_input.split(",")]
+            selected_stats = [available_stats[i] for i in selected_stats_indices]
+            break
+        except (ValueError, IndexError) as e:
+            print("Invalid input. Please enter the numbers corresponding to the statistics, separated by commas.")
+
+    stats = basic_statistical_analysis_and_plot(file_path, selected_sensors, selected_stats)
 
     # Print the statistics
     if stats is not None:
