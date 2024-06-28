@@ -4,16 +4,17 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
-"""
-always use reduce-freq before calling the plotting functions, otherwise machine crashes.
-"""
+from reducefreq import reduce_frequency
 
 
-"""
-input: density (A311) and temperature (A321) and versetime
-"""
-def plot_twin_timeline_verse_time(data, data2, verse_time, log=True):
+def plot_twin_timeline_verse_time(path):
+    f = xr.open_dataset(path)
+    time = f.VERSE_TIME
+    data = f.A311
+    data2 = f.A321
+    data = reduce_frequency(data, 1)
+    data2 = reduce_frequency(data2, 1)
+    log = True
     #catch all problems with frequency
     try:
         freq = data.shape[1]
@@ -70,10 +71,16 @@ def plot_twin_timeline_verse_time(data, data2, verse_time, log=True):
     fig.show()
 
 
-"""
-input: density (A311), temperature (A321), utc-time
-"""
-def plot_twin_timeline_utc(data, data2, time, log=True):
+
+def plot_twin_timeline_utc(path):
+
+    f = xr.open_dataset(path)
+    time = f.UTC_TIME
+    data = f.A311
+    data2 = f.A321
+    data = reduce_frequency(data, 1)
+    data2 = reduce_frequency(data2, 1)
+    log = True
 
     def convert_to_utc_time(date_strings):
         utc_times = pd.to_datetime(date_strings, format="%Y%m%d%H%M%S%f", utc=True)
@@ -137,8 +144,12 @@ def plot_twin_timeline_utc(data, data2, time, log=True):
     fig.show()
 
 
-def plot_on_map_density(data, longitude, latitude):
-   
+def plot_on_map_density(path):
+    f = xr.open_dataset(path)
+    latitude = f.GEO_LAT
+    longitude = f.GEO_LON
+    data = f.A311
+    data = reduce_frequency(data, 1)
     try:
         freq = data.shape[1]
     except:
@@ -204,7 +215,12 @@ def plot_on_map_density(data, longitude, latitude):
     # Show the figure
     fig.show()
 
-def plot_on_map_temperature(data, longitude, latitude):
+def plot_on_map_temperature(path):
+    f = xr.open_dataset(path)
+    latitude = f.GEO_LAT
+    longitude = f.GEO_LON
+    data = f.A321
+    data = reduce_frequency(data, 1)
    
     try:
         freq = data.shape[1]
@@ -273,11 +289,3 @@ def plot_on_map_temperature(data, longitude, latitude):
 
  
 
- 
-
-
-
-
-
-
-    
