@@ -8,6 +8,8 @@ import matplotlib.colors as colors
 from datetime import datetime, timezone
 import xarray as xr
 
+import parseandpolygon
+
 # Function to calculate leftmost and rightmost latitude extremes
 def calculate_extremes(coordinates):
     if coordinates:
@@ -15,6 +17,8 @@ def calculate_extremes(coordinates):
         max_lat = max(point[1] for point in coordinates[0])
         return min_lat, max_lat
     return None, None
+
+print(parseandpolygon.parse_filename(parseandpolygon.EFD1))
 
 st.title("Draw Rectangles on Map")
 

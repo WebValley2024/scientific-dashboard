@@ -1,4 +1,3 @@
-# %%
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
@@ -6,7 +5,6 @@ from datetime import datetime, timezone
 from glob import glob
 import xarray
 
-# %%
 EFD1 = 'data/CSES_01_EFD_1_L02_A1_213330_20211206_164953_20211206_172707_000.h5'
 HEP1 = 'data/CSES_01_HEP_1_L02_A4_176401_20210407_182209_20210407_190029_000.h5'
 HEP4 = 'data/CSES_01_HEP_4_L02_A4_202091_20210923_184621_20210923_192441_000.h5'
@@ -22,7 +20,6 @@ def dataset(path):
 def variables(data):
     return list(data.keys())
 
-# %%
 CSES_DATA_TABLE = {'EFD':{'1':'ULF','2':'ELF','3':'VLF','4':'HF'},\
                    'HPM':{'1':'FGM1','2':'FGM2','3':'CDSM','5':'FGM1Hz'},\
                    'SCM':{'1':'ULF','2':'ELF','3':'VLF'},\
@@ -71,7 +68,6 @@ def parse_filename(filename):
 
     return out
 
-# %%
 def polygon(points, data):
     
     ds = dataset(data)
@@ -84,6 +80,7 @@ def polygon(points, data):
     min_latitude = points[2][1]
     max_longitude = points[2][0]
 
+    # TODO investigate geopandas spatial index functions to improve performances
     lat_mask = (geo_lat >= min_latitude) & (geo_lat <= max_latitude)
     lon_mask = (geo_lon >= min_longitude) & (geo_lon <= max_longitude)
 
