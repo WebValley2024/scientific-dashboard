@@ -5,7 +5,14 @@ from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+"""
+always use reduce-freq before calling the plotting functions, otherwise machine crashes.
+"""
 
+
+"""
+input: density (A311) and temperature (A321) and versetime
+"""
 def plot_twin_timeline_verse_time(data, data2, verse_time, log=True):
     #catch all problems with frequency
     try:
@@ -63,6 +70,9 @@ def plot_twin_timeline_verse_time(data, data2, verse_time, log=True):
     fig.show()
 
 
+"""
+input: density (A311), temperature (A321), utc-time
+"""
 def plot_twin_timeline_utc(data, data2, time, log=True):
 
     def convert_to_utc_time(date_strings):
@@ -125,6 +135,146 @@ def plot_twin_timeline_utc(data, data2, time, log=True):
 
     # Show the figure
     fig.show()
+
+
+def plot_on_map_density(data, longitude, latitude):
+   
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+ 
+    measure=data.values
+
+    measure = measure[1:].flatten()
+
+ 
+ 
+    lon = longitude.values[1:].flatten()
+ 
+    lat = latitude.values[1:].flatten()
+    
+    length_coord = len(lon)
+ 
+    length_measure = len(measure)
+ 
+ 
+    lon_extend = np.concatenate([np.linspace(lon[i], lon[i+1], freq, endpoint=False) for i in range(length_coord-1)])
+ 
+    lon_extend = np.concatenate([lon_extend, np.linspace(lon[-2], lon[-1], freq)])
+ 
+ 
+    lat_extend = np.concatenate([np.linspace(lat[i], lat[i+1], freq, endpoint=False) for i in range(length_coord-1)])
+ 
+    lat_extend = np.concatenate([lat_extend, np.linspace(lat[-2], lat[-1], freq)])
+
+    fig = go.Figure()
+
+    scatter = go.Scattergeo(
+        lon=lon_extend,
+        lat=lat_extend,
+        text=measure,
+        marker=dict(
+            size=10,
+            color=measure, #np.log10(measure) if log else measure,
+            colorscale='Viridis',
+            colorbar=dict(title="1/m^3"),
+            cmin=measure,#np.log10(measure).min() if log else measure.min(),
+            cmax=10**11,#np.log10(measure).max() if log else measure.max(),
+            showscale=True
+        ),
+        mode='markers'
+    )
+
+    fig.add_trace(scatter)
+
+    # Update the layout
+    fig.update_layout(
+        #title="Electron Density",
+        geo=dict(
+            showland=True,
+            landcolor="lightgrey",
+        ),
+        autosize=False,
+        width=800,
+        height=600,
+    )
+    fig.update_layout(title = "Electron Density", template="plotly_white")
+
+    # Show the figure
+    fig.show()
+
+def plot_on_map_temperature(data, longitude, latitude):
+   
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+ 
+    measure=data.values
+
+    measure = measure[1:].flatten()
+
+ 
+ 
+    lon = longitude.values[1:].flatten()
+ 
+    lat = latitude.values[1:].flatten()
+    
+    length_coord = len(lon)
+ 
+    length_measure = len(measure)
+ 
+ 
+    lon_extend = np.concatenate([np.linspace(lon[i], lon[i+1], freq, endpoint=False) for i in range(length_coord-1)])
+ 
+    lon_extend = np.concatenate([lon_extend, np.linspace(lon[-2], lon[-1], freq)])
+ 
+ 
+    lat_extend = np.concatenate([np.linspace(lat[i], lat[i+1], freq, endpoint=False) for i in range(length_coord-1)])
+ 
+    lat_extend = np.concatenate([lat_extend, np.linspace(lat[-2], lat[-1], freq)])
+
+    fig = go.Figure()
+
+    scatter = go.Scattergeo(
+        lon=lon_extend,
+        lat=lat_extend,
+        text=measure,
+        marker=dict(
+            size=10,
+            color=measure,
+            colorscale='Viridis',
+            colorbar=dict(title="K"),
+            cmin=1000,#np.log10(measure).min() if log else measure.min(),
+            cmax=3000,#np.log10(measure).max() if log else measure.max(),
+            showscale=True
+        ),
+        mode='markers'
+    )
+
+    fig.add_trace(scatter)
+
+    # Update the layout
+    fig.update_layout(
+        #title="Electron Density",
+        geo=dict(
+            showland=True,
+            landcolor="lightgrey",
+        ),
+        autosize=False,
+        width=800,
+        height=600,
+    )
+    fig.update_layout(title = "Electron Temperature", template="plotly_white")
+
+    # Show the figure
+    fig.show()
+
+ 
+
+ 
+
 
 
 
