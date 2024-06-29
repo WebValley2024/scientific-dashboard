@@ -20,12 +20,12 @@ from shapely import geometry
 import streamlit as st
 from streamlit_folium import st_folium
 
-from efd import plot_EFD
-from newlap import lap_plot
-from heppx import heppx_plot
-from scm import scmplot
+from plotting.plot_EFD import plot_EFD
+from plotting.plot_LAP import lap_plot
+from plotting.plot_HEPPX import heppx_plot
+from plotting.plot_SCM import scmplot
 #REPLACE
-folder_path = '/home/wvuser/project/data'
+folder_path = '/home/wvuser/scientific-dashboard/dataCSES'
 
 def dataset(path):
     return xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')

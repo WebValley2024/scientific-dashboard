@@ -3,10 +3,12 @@ import xarray as xr
 import numpy as np
 import plotly.graph_objs as go
 import geopandas as gpd
+import streamlit as st
 
-
-def plot_EFD_on_map(data, latitude, longitude):
-    
+def plot_EFD_on_map(data):
+    f = xr.open_dataset(data, engine='h5netcdf', phony_dims='sort')
+    latitude = f['MAG_LAT'][...]
+    longitude = f['MAG_LON'][...]
     try:
         freq = data.shape[1]
     except IndexError:
@@ -86,8 +88,7 @@ def plot_EFD_on_map(data, latitude, longitude):
         margin={"r":0,"t":30,"l":0,"b":0},
         showlegend=False
     )
-
-    fig.show()
+    st.plotly_chart(fig)
 
 
 def reduce_frequency(data_array, frequency):
@@ -119,7 +120,7 @@ def reduce_frequency(data_array, frequency):
 
  
 def plot_SCM(path):
-    f = xr.open_dataset(path, phony_dims='sort')
+    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
     X_Waveform = f['A231_W'][...]
     Y_Waveform = f['A232_W'][...]
     Z_Waveform = f['A233_W'][...]
@@ -211,26 +212,196 @@ def plot_SCM(path):
             yaxis_title="Frequency (Hz)",
             legend=dict(x=1, y=0.5)
         )
-        fig.show()
+        st.plotly_chart(fig1)
  
     # Display the first two figures
-    fig1.show()
-    fig2.show()
-
-
-
-
-def plot_SCM_on_map(data, latitude, longitude):
+    st.plotly_chart(fig2)
     
+
+
+# def plot_SCM_on_map(data):
+#     f = xr.open_dataset(data, engine='h5netcdf', phony_dims='sort')
+#     latitude = f['MAG_LAT'][...]
+#     longitude = f['MAG_LON'][...]
+#     try:
+#         freq = data.shape[1]
+#     except IndexError:
+#         freq = 1
+
+#     measure = data.values.flatten()
+
+#     lon = longitude.values.flatten()
+#     lat = latitude.values.flatten()
+
+#     length_coord = len(lon)
+#     length_measure = len(measure)
+
+#     lon_extend = np.concatenate([np.linspace(lon[i], lon[i+1], freq, endpoint=False) for i in range(length_coord-1)])
+#     lon_extend = np.concatenate([lon_extend, np.linspace(lon[-2], lon[-1], freq)])
+
+#     lat_extend = np.concatenate([np.linspace(lat[i], lat[i+1], freq, endpoint=False) for i in range(length_coord-1)])
+#     lat_extend = np.concatenate([lat_extend, np.linspace(lat[-2], lat[-1], freq)])
+
+#     # Create a scatter plot on a map using Plotly
+#     fig = go.Figure()
+
+#     # Load world map using geopandas
+#     world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+
+#     # Plot world map as background
+#     fig.add_trace(go.Choropleth(
+#         geojson=world.__geo_interface__,
+#         locations=world.index,
+#         z=np.zeros(len(world)),  # Dummy values for Choropleth trace
+#         colorscale=[[0, 'lightgrey'], [1, 'lightgrey']],
+#         hoverinfo='none',
+#         showscale=False
+#     ))
+
+#     # Scatter plot for data points
+#     fig.add_trace(go.Scattergeo(
+#         lon=lon_extend,
+#         lat=lat_extend,
+#         mode='markers',
+#         marker=dict(
+#             size=10,
+#             color=measure,
+#             colorscale='Viridis',
+#             colorbar=dict(title="V/m"),
+#             opacity=0.8,
+#             colorbar_thickness=20,
+#             colorbar_x=0.85,
+#             colorbar_y=0.5,
+#             colorbar_bgcolor='rgba(255,255,255,0.5)'
+#         ),
+#         name="Field magnitude"
+#     ))
+
+#     fig.update_geos(
+#         projection_type="natural earth",
+#         landcolor="lightgrey",
+#         oceancolor="lightblue",
+#         showland=True,
+#         showocean=True,
+#         showcountries=True,
+#         showcoastlines=True,
+#         showframe=False,
+#         coastlinewidth=0.5,
+#         coastlinecolor="white"
+#     )
+
+#     fig.update_layout(
+#         title="Electric field magnitude during the orbit",
+#         geo=dict(
+#             showframe=False,
+#             showcoastlines=False,
+#             projection_type='natural earth'
+#         ),
+#         geo_scope='world',
+#         height=600,
+#         margin={"r":0,"t":30,"l":0,"b":0},
+#         showlegend=False
+#     )
+
+#     fig.show()
+
+# def plot_SCM_on_map(data, latitude, longitude):
+    
+#     try:
+#         freq = data.shape[1]
+#     except IndexError:
+#         freq = 1
+
+#     measure = data.values.flatten()
+
+#     lon = longitude.values.flatten()
+#     lat = latitude.values.flatten()
+
+#     length_coord = len(lon)
+#     length_measure = len(measure)
+
+#     lon_extend = np.concatenate([np.linspace(lon[i], lon[i+1], freq, endpoint=False) for i in range(length_coord-1)])
+#     lon_extend = np.concatenate([lon_extend, np.linspace(lon[-2], lon[-1], freq)])
+
+#     lat_extend = np.concatenate([np.linspace(lat[i], lat[i+1], freq, endpoint=False) for i in range(length_coord-1)])
+#     lat_extend = np.concatenate([lat_extend, np.linspace(lat[-2], lat[-1], freq)])
+
+#     # Create a scatter plot on a map using Plotly
+#     fig = go.Figure()
+
+#     # Load world map from the local directory
+#     world = gpd.read_file('ne_110m_admin_0_countries.shp')
+
+#     # Plot world map as background
+#     fig.add_trace(go.Choropleth(
+#         geojson=world.__geo_interface__,
+#         locations=world.index,
+#         z=np.zeros(len(world)),  # Dummy values for Choropleth trace
+#         colorscale=[[0, 'lightgrey'], [1, 'lightgrey']],
+#         hoverinfo='none',
+#         showscale=False
+#     ))
+
+#     # Scatter plot for data points
+#     fig.add_trace(go.Scattergeo(
+#         lon=lon_extend,
+#         lat=lat_extend,
+#         mode='markers',
+#         marker=dict(
+#             size=10,
+#             color=measure,
+#             colorscale='Viridis',
+#             colorbar=dict(title="V/m"),
+#             opacity=0.8,
+#             colorbar_thickness=20,
+#             colorbar_x=0.85,
+#             colorbar_y=0.5,
+#             colorbar_bgcolor='rgba(255,255,255,0.5)'
+#         ),
+#         name="Field magnitude"
+#     ))
+
+#     fig.update_geos(
+#         projection_type="natural earth",
+#         landcolor="lightgrey",
+#         oceancolor="lightblue",
+#         showland=True,
+#         showocean=True,
+#         showcountries=True,
+#         showcoastlines=True,
+#         showframe=False,
+#         coastlinewidth=0.5,
+#         coastlinecolor="white"
+#     )
+
+#     fig.update_layout(
+#         title="Electric field magnitude during the orbit",
+#         geo=dict(
+#             showframe=False,
+#             showcoastlines=False,
+#             projection_type='natural earth'
+#         ),
+#         geo_scope='world',
+#         height=600,
+#         margin={"r":0,"t":30,"l":0,"b":0},
+#         showlegend=False
+#     )
+#     st.plotly_chart(fig)
+
+def plot_SCM_on_map(data, latitude, longitude, downsample_factor=50):
     try:
         freq = data.shape[1]
     except IndexError:
         freq = 1
 
     measure = data.values.flatten()
-
     lon = longitude.values.flatten()
     lat = latitude.values.flatten()
+
+    # Downsample the data
+    measure = measure[::downsample_factor]
+    lon = lon[::downsample_factor]
+    lat = lat[::downsample_factor]
 
     length_coord = len(lon)
     length_measure = len(measure)
@@ -241,11 +412,15 @@ def plot_SCM_on_map(data, latitude, longitude):
     lat_extend = np.concatenate([np.linspace(lat[i], lat[i+1], freq, endpoint=False) for i in range(length_coord-1)])
     lat_extend = np.concatenate([lat_extend, np.linspace(lat[-2], lat[-1], freq)])
 
+    # Downsample the extended coordinates
+    lon_extend = lon_extend[::downsample_factor]
+    lat_extend = lat_extend[::downsample_factor]
+
     # Create a scatter plot on a map using Plotly
     fig = go.Figure()
 
-    # Load world map using geopandas
-    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+    # Load world map from the local directory
+    world = gpd.read_file('Earth_Data/ne_110m_admin_0_countries.shp')
 
     # Plot world map as background
     fig.add_trace(go.Choropleth(
@@ -301,20 +476,16 @@ def plot_SCM_on_map(data, latitude, longitude):
         margin={"r":0,"t":30,"l":0,"b":0},
         showlegend=False
     )
+    st.plotly_chart(fig)
 
-    fig.show()
-
-
-path = "/home/wvuser/webvalley2024/Small_samples/CSES_01_SCM_1_L02_A2_104240_20191219_235254_20191220_002829_000.h5"
-
-
-f = xr.open_dataset(path, phony_dims='sort')
-print(f)
-latitude = f['MAG_LAT'][...]
-longitude = f['MAG_LON'][...]
-X_Waveform = f['A231_W'][...]
-Y_Waveform = f['A232_W'][...]
-Z_Waveform = f['A233_W'][...]
-magnitude=  np.sqrt(X_Waveform**2 + Y_Waveform**2 + Z_Waveform**2)
-plot_SCM_on_map(magnitude, latitude, longitude)
-plot_SCM(path)
+def scmplot(file_path):
+    f = xr.open_dataset(file_path, engine='h5netcdf', phony_dims='sort')
+    latitude = f['MAG_LAT'][...]
+    longitude = f['MAG_LON'][...]
+    X_Waveform = f['A231_W'][...]
+    Y_Waveform = f['A232_W'][...]
+    Z_Waveform = f['A233_W'][...]
+    magnitude=  np.sqrt(X_Waveform**2 + Y_Waveform**2 + Z_Waveform**2)
+    plot_SCM_on_map(magnitude, latitude, longitude)
+    plot_SCM(file_path)
+    # plot_EFD_on_map(file_path)
