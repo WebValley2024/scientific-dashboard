@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from reducefreq import reduce_frequency
 import xarray as xr
+import plotly.express as px
+import plotly.io as pio
 
 def plot_xray_count_verse_time(path):
     f = xr.open_dataset(path)
@@ -124,3 +126,57 @@ def plot_xray_count_utc_time(path):
 
     # Show the figure
     fig.show()
+
+
+
+
+def plot_X_energy_spectrum_test(path):
+    f = xr.open_dataset(path)
+    verse_time = f.VERSE_TIME
+    data = f.A413
+
+    log = False
+    colormap='viridis'
+
+    # Catch all problems with frequency
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values)
+    data = data.values[1:]
+    verse_time = verse_time.values[1:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+
+    # Transpose data for correct orientation
+    data = data.T
+    #verse_time = verse_time.T
+    #print(verse_time)
+
+    fig = go.Figure()
+    print(verse_time)
+
+    # Create the heatmap
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=np.arange(data.shape[0]),
+        z=data,
+        colorscale=colormap,
+        colorbar=dict(title='Particles/cm^2/s/kEV'),
+        zmin=0,#np.min(data) if not log else None,
+        zmax=0.5,#np.max(data) if not log else None,
+        #zsmooth='best'
+    ))
+
+    # Create the layout
+    fig.update_layout(go.Layout(
+        title='X Energy Spectrum',
+        xaxis_title = "Verse Time (ms)",
+        yaxis_title = "Energy (kEV)",
+    ))
+    fig.show()
+
