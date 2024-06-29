@@ -120,7 +120,6 @@ def reduce_frequency(data_array, frequency):
  
 def plot_EFD(path):
     f = xr.open_dataset(path, phony_dims='sort')
-    print(f)
     X_Waveform = f['A111_W'][...]
     Y_Waveform = f['A112_W'][...]
     Z_Waveform = f['A113_W'][...]
@@ -217,7 +216,6 @@ def plot_EFD(path):
     # Display the first two figures
     fig1.show()
     fig2.show()
-    plot_EFD_on_map(magnitude, latitude, longitude)
 
 
 

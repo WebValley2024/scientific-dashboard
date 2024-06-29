@@ -120,7 +120,6 @@ def reduce_frequency(data_array, frequency):
  
 def plot_SCM(path):
     f = xr.open_dataset(path, phony_dims='sort')
-    print(f)
     X_Waveform = f['A231_W'][...]
     Y_Waveform = f['A232_W'][...]
     Z_Waveform = f['A233_W'][...]
@@ -317,6 +316,5 @@ X_Waveform = f['A231_W'][...]
 Y_Waveform = f['A232_W'][...]
 Z_Waveform = f['A233_W'][...]
 magnitude=  np.sqrt(X_Waveform**2 + Y_Waveform**2 + Z_Waveform**2)
-print(f.keys())
-plot_SCM(path)
 plot_SCM_on_map(magnitude, latitude, longitude)
+plot_SCM(path)
