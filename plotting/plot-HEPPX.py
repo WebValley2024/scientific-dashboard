@@ -235,3 +235,7 @@ def plot_X_energy_spectrum_utc(path):
     ))
     fig.show()
 
+"""
+no method to plot A433 (X-Ray-Flux) yet. Could just replace the sensor in methods above. 
+looks exaktly the same as X-energy-spectrum.
+"""
