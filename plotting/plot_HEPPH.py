@@ -323,6 +323,64 @@ def plot_electron_energy_verse(path):
     fig.update_layout(go.Layout(
         title='Electron Energy Spectrum',
         xaxis_title = "Verse Time (ms)",
-        yaxis_title = "Energy (MeV)",
+        yaxis_title = "Energy (KeV) CHECK UNIT!",
     ))
     fig.show()
+
+def plot_electron_energy_utc(path):
+    f = xr.open_zarr(path)
+    verse_time = f.UTC_TIME
+    data = f.A411
+    data = np.sum(data, axis=2)
+    #data = reduce_frequency(data, 1)
+
+    log = False
+    colormap='viridis'
+
+    def convert_to_utc_time(date_strings):
+        utc_times = pd.to_datetime(date_strings, format="%Y%m%d%H%M%S%f", utc=True)
+        return utc_times
+
+    # Catch all problems with frequency
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values)
+    data = data.values[1:]
+    verse_time = verse_time.values[1:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+    utctimes = convert_to_utc_time(verse_time)
+
+
+    # Transpose data for correct orientation
+    data = data.T
+    #verse_time = verse_time.T
+    #print(verse_time)
+
+    fig = go.Figure()
+
+    # Create the heatmap
+    fig.add_trace(go.Heatmap(
+        x=utctimes,
+        y=np.arange(data.shape[0]),
+        z=data,
+        colorscale=colormap,
+        colorbar=dict(title='Particles/cm^2/s/kEV'),
+        zmin=0,#np.min(data) if not log else None,
+        zmax=0.8,#np.max(data) if not log else None,
+        #zsmooth='best'
+    ))
+
+    # Create the layout
+    fig.update_layout(go.Layout(
+        title='Electron Energy Spectrum',
+        xaxis_title = "Verse Time (ms)",
+        yaxis_title = "Energy (KeV) CHECK UNIT!",
+    ))
+    fig.show()
+
