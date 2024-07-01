@@ -15,8 +15,12 @@ import plotly.io as pio
 def plot_proton_electron_count_verse_time(path):
     f = xr.open_zarr(path)
     verse_time = f.VERSE_TIME
-    data = f.Count_electron
-    data2 = f.Count_proton
+    try:
+        data = f.Count_electron
+        data2 = f.Count_proton
+    except:
+        data = f.Count_Electron
+        data2 = f.Count_Proton
 
     # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
     data = data.values[50:].flatten()
@@ -70,8 +74,12 @@ def plot_proton_electron_count_utc(path):
 
     f = xr.open_zarr(path)
     time = f.UTC_TIME
-    data = f.Count_electron
-    data2 = f.Count_proton
+    try:
+        data = f.Count_electron
+        data2 = f.Count_proton
+    except:
+        data = f.Count_Electron
+        data2 = f.Count_Proton
     #data = reduce_frequency(data, 1)
     #data2 = reduce_frequency(data2, 1)
     log = False
@@ -140,7 +148,10 @@ def plot_on_map_electron_count(path):
     f = xr.open_zarr(path)
     latitude = f.GEO_LAT
     longitude = f.GEO_LON
-    data = f.Count_electron
+    try:
+        data = f.Count_electron
+    except:
+        data = f.Count_Electron
     #data = reduce_frequency(data, 1)
     try:
         freq = data.shape[1]
@@ -206,11 +217,14 @@ def plot_on_map_electron_count(path):
 
     fig.show()
 
-def plot_on_map_electron_count(path):
+def plot_on_map_proton_count(path):
     f = xr.open_zarr(path)
     latitude = f.GEO_LAT
     longitude = f.GEO_LON
-    data = f.Count_proton
+    try:
+        data = f.Count_proton
+    except:
+        data = f.Count_Proton
     #data = reduce_frequency(data, 1)
     try:
         freq = data.shape[1]
@@ -302,6 +316,7 @@ def plot_electron_energy_verse(path):
 
     # Transpose data for correct orientation
     data = data.T
+    data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -313,9 +328,9 @@ def plot_electron_energy_verse(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/kEV'),
-        zmin=0,#np.min(data) if not log else None,
-        zmax=0.8,#np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=0.8,#np.max(data) if not log else None,
         #zsmooth='best'
     ))
 
@@ -359,6 +374,7 @@ def plot_electron_energy_utc(path):
 
     # Transpose data for correct orientation
     data = data.T
+    data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -370,17 +386,347 @@ def plot_electron_energy_utc(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/kEV'),
-        zmin=0,#np.min(data) if not log else None,
-        zmax=0.8,#np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=0.8,#np.max(data) if not log else None,
         #zsmooth='best'
     ))
 
     # Create the layout
     fig.update_layout(go.Layout(
         title='Electron Energy Spectrum',
+        xaxis_title = "UTC Time",
+        yaxis_title = "Energy (KeV) CHECK UNIT!",
+    ))
+    fig.show()
+
+def plot_electron_pitch_verse(path):
+    f = xr.open_zarr(path)
+    verse_time = f.VERSE_TIME
+    data = f.A411
+    data = np.sum(data, axis=1)
+    #data = reduce_frequency(data, 1)
+
+    log = False
+    colormap='viridis'
+
+    # Catch all problems with frequency
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values)
+    data = data.values[1:]
+    verse_time = verse_time.values[1:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+
+    # Transpose data for correct orientation
+    data = data.T
+    data = np.log10(data+1)
+    #verse_time = verse_time.T
+    #print(verse_time)
+
+    fig = go.Figure()
+
+    # Create the heatmap
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=np.arange(data.shape[0]),
+        z=data,
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=10,#np.max(data) if not log else None,
+        #zsmooth='best'
+    ))
+
+    # Create the layout
+    fig.update_layout(go.Layout(
+        title='Electron Pitch Angle',
+        xaxis_title = "Verse Time (ms)",
+        yaxis_title = "Pitch (degree)",
+    ))
+    fig.show()
+
+def plot_electron_pitch_utc(path):
+    f = xr.open_zarr(path)
+    verse_time = f.UTC_TIME
+    data = f.A411
+    data = np.sum(data, axis=1)
+    #data = reduce_frequency(data, 1)
+
+    log = False
+    colormap='viridis'
+
+    def convert_to_utc_time(date_strings):
+        utc_times = pd.to_datetime(date_strings, format="%Y%m%d%H%M%S%f", utc=True)
+        return utc_times
+
+    # Catch all problems with frequency
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values)
+    data = data.values[1:]
+    verse_time = verse_time.values[1:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+    utctimes = convert_to_utc_time(verse_time)
+
+
+    # Transpose data for correct orientation
+    data = data.T
+    data = np.log10(data+1)
+    #verse_time = verse_time.T
+    #print(verse_time)
+
+    fig = go.Figure()
+
+    # Create the heatmap
+    fig.add_trace(go.Heatmap(
+        x=utctimes,
+        y=np.arange(data.shape[0]),
+        z=data,
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=10,#np.max(data) if not log else None,
+        #zsmooth='best'
+    ))
+
+    # Create the layout
+    fig.update_layout(go.Layout(
+        title='Electron Pitch Angle',
+        xaxis_title = "UTC Time",
+        yaxis_title = "Pitch Angle (degree)",
+    ))
+    fig.show()
+def plot_proton_energy_verse(path):
+    f = xr.open_zarr(path)
+    verse_time = f.VERSE_TIME
+    data = f.A412
+    data = np.sum(data, axis=2)
+    #data = reduce_frequency(data, 1)
+
+    log = False
+    colormap='viridis'
+
+    # Catch all problems with frequency
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values)
+    data = data.values[1:]
+    verse_time = verse_time.values[1:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+
+    # Transpose data for correct orientation
+    data = data.T
+    data = np.log10(data+1)
+    #verse_time = verse_time.T
+    #print(verse_time)
+
+    fig = go.Figure()
+
+    # Create the heatmap
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=np.arange(data.shape[0]),
+        z=data,
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=0.3,#np.max(data) if not log else None,
+        #zsmooth='best'
+    ))
+
+    # Create the layout
+    fig.update_layout(go.Layout(
+        title='Proton Energy Spectrum',
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Energy (KeV) CHECK UNIT!",
     ))
     fig.show()
 
+def plot_proton_energy_utc(path):
+    f = xr.open_zarr(path)
+    verse_time = f.UTC_TIME
+    data = f.A412
+    data = np.sum(data, axis=2)
+    #data = reduce_frequency(data, 1)
+
+    log = False
+    colormap='viridis'
+
+    def convert_to_utc_time(date_strings):
+        utc_times = pd.to_datetime(date_strings, format="%Y%m%d%H%M%S%f", utc=True)
+        return utc_times
+
+    # Catch all problems with frequency
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values)
+    data = data.values[1:]
+    verse_time = verse_time.values[1:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+    utctimes = convert_to_utc_time(verse_time)
+
+
+    # Transpose data for correct orientation
+    data = data.T
+    data = np.log10(data+1)
+    #verse_time = verse_time.T
+    #print(verse_time)
+
+    fig = go.Figure()
+
+    # Create the heatmap
+    fig.add_trace(go.Heatmap(
+        x=utctimes,
+        y=np.arange(data.shape[0]),
+        z=data,
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=0.3,#np.max(data) if not log else None,
+        #zsmooth='best'
+    ))
+
+    # Create the layout
+    fig.update_layout(go.Layout(
+        title='Proton Energy Spectrum',
+        xaxis_title = "UTC Time",
+        yaxis_title = "Energy (KeV) CHECK UNIT!",
+    ))
+    fig.show()
+
+def plot_proton_pitch_verse(path):
+    f = xr.open_zarr(path)
+    verse_time = f.VERSE_TIME
+    data = f.A412
+    data = np.sum(data, axis=1)
+    #data = reduce_frequency(data, 1)
+
+    log = False
+    colormap='viridis'
+
+    # Catch all problems with frequency
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values)
+    data = data.values[1:]
+    verse_time = verse_time.values[1:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+
+    # Transpose data for correct orientation
+    data = data.T
+    #verse_time = verse_time.T
+    #print(verse_time)
+    data = np.log10(data+1)
+
+    fig = go.Figure()
+
+    # Create the heatmap
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=np.arange(data.shape[0]),
+        z=data,
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=5,#np.max(data) if not log else None,
+        #zsmooth='best'
+    ))
+
+    # Create the layout
+    fig.update_layout(go.Layout(
+        title='Proton Pitch Angle',
+        xaxis_title = "Verse Time (ms)",
+        yaxis_title = "Pitch (degree)",
+    ))
+    fig.show()
+
+def plot_proton_pitch_utc(path):
+    f = xr.open_zarr(path)
+    verse_time = f.UTC_TIME
+    data = f.A412
+    data = np.sum(data, axis=1)
+    #data = reduce_frequency(data, 1)
+
+    log = True
+    colormap='viridis'
+
+    def convert_to_utc_time(date_strings):
+        utc_times = pd.to_datetime(date_strings, format="%Y%m%d%H%M%S%f", utc=True)
+        return utc_times
+
+    # Catch all problems with frequency
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values)
+    data = data.values[1:]
+    verse_time = verse_time.values[1:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+    utctimes = convert_to_utc_time(verse_time)
+
+
+    # Transpose data for correct orientation
+    data = data.T
+    #verse_time = verse_time.T
+    #print(verse_time)
+    log_data = np.log10(data + 1)  # Adding 1 to avoid log(0) issues
+
+    fig = go.Figure()
+
+    # Create the heatmap
+    fig.add_trace(go.Heatmap(
+        x=utctimes,
+        y=np.arange(data.shape[0]),
+        z=log_data,
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #4,#np.max(data) if not log else None,
+        #zsmooth='best'
+        zmin=np.min(log_data),
+        zmax=np.max(log_data),
+    ))
+
+    # Create the layout
+    fig.update_layout(go.Layout(
+        title='Proton Pitch Angle',
+        xaxis_title = "UTC Time",
+        yaxis_title = "Pitch Angle (degree)",
+    ))
+    fig.show()

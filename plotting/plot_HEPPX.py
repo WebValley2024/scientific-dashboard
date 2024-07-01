@@ -147,6 +147,7 @@ def plot_X_energy_spectrum_verse(path):
 
     # Transpose data for correct orientation
     data = data.T
+    data = np.log10(data+1)
 
     fig = go.Figure()
 
@@ -156,9 +157,9 @@ def plot_X_energy_spectrum_verse(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/kEV'),
-        zmin=0,  # np.min(data) if not log else None,
-        zmax=0.5,  # np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/kEV)'),
+        #zmin=0,  # np.min(data) if not log else None,
+        #zmax=0.5,  # np.max(data) if not log else None,
     ))
 
     # Create the layout
@@ -198,6 +199,7 @@ def plot_X_energy_spectrum_utc(path):
 
     # Transpose data for correct orientation
     data = data.T
+    data = np.log10(data+1)
 
     fig = go.Figure()
 
@@ -207,9 +209,9 @@ def plot_X_energy_spectrum_utc(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/kEV'),
-        zmin=0,  # np.min(data) if not log else None,
-        zmax=0.9,  # np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/kEV)'),
+        #zmin=0,  # np.min(data) if not log else None,
+        #zmax=0.9,  # np.max(data) if not log else None,
     ))
 
     # Create the layout
