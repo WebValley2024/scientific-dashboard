@@ -325,7 +325,7 @@ def plot_electron_energy_verse(path):
     # Create the heatmap
     fig.add_trace(go.Heatmap(
         x=verse_time,
-        y=np.arange(data.shape[0]),
+        y=f.Energy_Table_Xray.values.flatten(),
         z=data,
         colorscale=colormap,
         colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
@@ -383,7 +383,7 @@ def plot_electron_energy_utc(path):
     # Create the heatmap
     fig.add_trace(go.Heatmap(
         x=utctimes,
-        y=np.arange(data.shape[0]),
+        y=f.Energy_Table_Xray.values.flatten(),
         z=data,
         colorscale=colormap,
         colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
@@ -435,7 +435,7 @@ def plot_electron_pitch_verse(path):
     # Create the heatmap
     fig.add_trace(go.Heatmap(
         x=verse_time,
-        y=np.arange(data.shape[0]),
+        y=f.Energy_Table_Xray.values.flatten(),
         z=data,
         colorscale=colormap,
         colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
@@ -493,7 +493,7 @@ def plot_electron_pitch_utc(path):
     # Create the heatmap
     fig.add_trace(go.Heatmap(
         x=utctimes,
-        y=np.arange(data.shape[0]),
+        y=f.Energy_Table_Xray.values.flatten(),
         z=data,
         colorscale=colormap,
         colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
@@ -602,7 +602,7 @@ def plot_proton_energy_utc(path):
     # Create the heatmap
     fig.add_trace(go.Heatmap(
         x=utctimes,
-        y=np.arange(data.shape[0]),
+        y=f.Energy_Table_Xray.values.flatten(),
         z=data,
         colorscale=colormap,
         colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
@@ -654,7 +654,7 @@ def plot_proton_pitch_verse(path):
     # Create the heatmap
     fig.add_trace(go.Heatmap(
         x=verse_time,
-        y=np.arange(data.shape[0]),
+        y=f.Energy_Table_Xray.values.flatten(),
         z=data,
         colorscale=colormap,
         colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
@@ -712,7 +712,7 @@ def plot_proton_pitch_utc(path):
     # Create the heatmap
     fig.add_trace(go.Heatmap(
         x=utctimes,
-        y=np.arange(data.shape[0]),
+        y=f.Energy_Table_Xray.values.flatten(),
         z=log_data,
         colorscale=colormap,
         colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
