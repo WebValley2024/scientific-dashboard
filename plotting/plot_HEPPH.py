@@ -316,6 +316,7 @@ def plot_electron_energy_verse(path):
 
     # Transpose data for correct orientation
     data = data.T
+    data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -327,9 +328,9 @@ def plot_electron_energy_verse(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/str'),
-        zmin=0,#np.min(data) if not log else None,
-        zmax=0.8,#np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=0.8,#np.max(data) if not log else None,
         #zsmooth='best'
     ))
 
@@ -373,6 +374,7 @@ def plot_electron_energy_utc(path):
 
     # Transpose data for correct orientation
     data = data.T
+    data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -384,9 +386,9 @@ def plot_electron_energy_utc(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/str'),
-        zmin=0,#np.min(data) if not log else None,
-        zmax=0.8,#np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=0.8,#np.max(data) if not log else None,
         #zsmooth='best'
     ))
 
@@ -424,6 +426,7 @@ def plot_electron_pitch_verse(path):
 
     # Transpose data for correct orientation
     data = data.T
+    data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -435,9 +438,9 @@ def plot_electron_pitch_verse(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/str'),
-        zmin=0,#np.min(data) if not log else None,
-        zmax=10,#np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=10,#np.max(data) if not log else None,
         #zsmooth='best'
     ))
 
@@ -481,6 +484,7 @@ def plot_electron_pitch_utc(path):
 
     # Transpose data for correct orientation
     data = data.T
+    data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -492,9 +496,9 @@ def plot_electron_pitch_utc(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/str'),
-        zmin=0,#np.min(data) if not log else None,
-        zmax=10,#np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=10,#np.max(data) if not log else None,
         #zsmooth='best'
     ))
 
@@ -531,6 +535,7 @@ def plot_proton_energy_verse(path):
 
     # Transpose data for correct orientation
     data = data.T
+    data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -542,9 +547,9 @@ def plot_proton_energy_verse(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/str'),
-        zmin=0,#np.min(data) if not log else None,
-        zmax=0.3,#np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=0.3,#np.max(data) if not log else None,
         #zsmooth='best'
     ))
 
@@ -588,6 +593,7 @@ def plot_proton_energy_utc(path):
 
     # Transpose data for correct orientation
     data = data.T
+    data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -599,9 +605,9 @@ def plot_proton_energy_utc(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/str'),
-        zmin=0,#np.min(data) if not log else None,
-        zmax=0.3,#np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=0.3,#np.max(data) if not log else None,
         #zsmooth='best'
     ))
 
@@ -641,6 +647,7 @@ def plot_proton_pitch_verse(path):
     data = data.T
     #verse_time = verse_time.T
     #print(verse_time)
+    data = np.log10(data+1)
 
     fig = go.Figure()
 
@@ -650,9 +657,9 @@ def plot_proton_pitch_verse(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/str'),
-        zmin=0,#np.min(data) if not log else None,
-        zmax=5,#np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #zmax=5,#np.max(data) if not log else None,
         #zsmooth='best'
     ))
 
@@ -671,7 +678,7 @@ def plot_proton_pitch_utc(path):
     data = np.sum(data, axis=1)
     #data = reduce_frequency(data, 1)
 
-    log = False
+    log = True
     colormap='viridis'
 
     def convert_to_utc_time(date_strings):
@@ -698,6 +705,7 @@ def plot_proton_pitch_utc(path):
     data = data.T
     #verse_time = verse_time.T
     #print(verse_time)
+    log_data = np.log10(data + 1)  # Adding 1 to avoid log(0) issues
 
     fig = go.Figure()
 
@@ -705,12 +713,14 @@ def plot_proton_pitch_utc(path):
     fig.add_trace(go.Heatmap(
         x=utctimes,
         y=np.arange(data.shape[0]),
-        z=data,
+        z=log_data,
         colorscale=colormap,
-        colorbar=dict(title='Particles/cm^2/s/str'),
-        zmin=0,#np.min(data) if not log else None,
-        zmax=4,#np.max(data) if not log else None,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        #zmin=0,#np.min(data) if not log else None,
+        #4,#np.max(data) if not log else None,
         #zsmooth='best'
+        zmin=np.min(log_data),
+        zmax=np.max(log_data),
     ))
 
     # Create the layout
