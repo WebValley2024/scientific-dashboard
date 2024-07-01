@@ -8,12 +8,15 @@ def convert_to_utc_time(date_strings):
     return utc_times
 
 def plot_spectrogram(z_data, x_data, y_data, title, x_title, y_title):
+    # Apply logarithmic transformation to the data
+    z_data_log = np.log10(z_data + 1e-10)  # Add a small value to avoid log(0)
+
     fig = go.Figure(go.Heatmap(
-        z=z_data.T,  # Transpose the data for correct orientation
+        z=z_data_log.T,  # Transpose the data for correct orientation
         x=x_data,
         y=y_data,
         colorscale='Viridis',
-        colorbar=dict(title='Particles/cm²/s/sr/MeV')
+        colorbar=dict(title='Log10(Particles/cm²/s/sr/MeV)')
     ))
 
     fig.update_layout(
