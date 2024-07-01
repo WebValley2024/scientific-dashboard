@@ -154,7 +154,7 @@ def plot_X_energy_spectrum_verse(path):
     # Create the heatmap
     fig.add_trace(go.Heatmap(
         x=verse_time,
-        y=np.arange(data.shape[0]),
+        y=f.Energy_Table_Xray.values.flatten(),
         z=data,
         colorscale=colormap,
         colorbar=dict(title='Log10(Particles/cm^2/s/kEV)'),
