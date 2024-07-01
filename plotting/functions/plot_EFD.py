@@ -3,7 +3,7 @@ import streamlit as st
 from streamlit_folium import st_folium
 import folium
 from folium.plugins import Draw
-import numpy as np
+import numpy as nps
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import skew, kurtosis, t
@@ -12,7 +12,9 @@ import pandas as pd
 import os
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
-from reducefreq import reduce_frequency
+
+# from reduce_frequency_test import reduce_frequency
+from functions.reduce_frequency_test import reduce_frequency
 
 import geopandas as gpd
 import pandas as pd

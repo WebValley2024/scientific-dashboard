@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import xarray as xr
 import pandas as pd
 import numpy as np
-from reducefreq import reduce_frequency  # Assuming this is a custom function you've defined
+from functions.reduce_frequency_test import reduce_frequency
 from plotly.subplots import make_subplots
 
 
