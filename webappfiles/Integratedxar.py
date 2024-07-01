@@ -20,12 +20,12 @@ from streamlit_folium import st_folium
 import logging
 
 from plot.efd import plot_EFD
-from newlap import lap_plot
-from heppx import heppx_plot
-from scm import scmplot
-from hepph import plotheph
+from plot.lap import lap_plot
+from plot.heppx import heppx_plot
+from plot.scm import scmplot
+from plot.hepph import plotheph
 #REPLACE
-folder_path = '/home/fbk/wv24/LAP'
+folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data'
 
 
 
@@ -358,7 +358,7 @@ def extract_dataset_type(file_paths):
     return dataset_types
 
 
-def file_selector(folder_path='/home/fbk/wv24/LAP'):
+def file_selector(folder_path='/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data'):
     filenames = os.listdir(folder_path)
     file_paths = [os.path.join(folder_path, filename) for filename in filenames]    
     return file_paths

@@ -12,7 +12,7 @@ import pandas as pd
 import os
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
-from reducefreq import reduce_frequency
+from .reducefreq import reduce_frequency
 
 import geopandas as gpd
 import pandas as pd
@@ -26,7 +26,7 @@ from glob import glob
 import datetime
 
 def plot_EFD(path):
-    f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims='sort')
+    f = xr.open_zarr(path)
     X_Waveform = f['A111_W'][...]
     Y_Waveform = f['A112_W'][...]
     Z_Waveform = f['A113_W'][...]
