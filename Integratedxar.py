@@ -19,12 +19,20 @@ import streamlit as st
 from streamlit_folium import st_folium
 import logging
 
-from plot.efd import plot_EFD
-from plot.lap import lap_plot
-from plot.heppx import heppx_plot
-from plot.scm import scmplot
-from plot.hepph import plotheph
+from plotting.functions.plot_EFD import plot_EFD
+from plotting.functions.plot_LAP import lap_plot
+from plotting.functions.plot_HEPPX import heppx_plot
+from plotting.functions.plot_SCM import scmplot
+from plotting.functions.plot_HEPPH import plotheph
+
+# from plot.efd import plot_EFD
+# from plot.lap import lap_plot
+# from plot.heppx import heppx_plot
+# from plot.scm import scmplot
+# from plot.hepph import plotheph
 #REPLACE
+# folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data'
+
 folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data'
 
 
