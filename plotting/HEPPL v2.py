@@ -1,6 +1,11 @@
 import numpy as np
+import pandas as pd
 import xarray as xr
 import plotly.graph_objs as go
+
+def convert_to_utc_time(date_strings):
+    utc_times = pd.to_datetime(date_strings, format="%Y%m%d%H%M%S%f", utc=True)
+    return utc_times
 
 def plot_spectrogram(z_data, x_data, y_data, title, x_title, y_title):
     fig = go.Figure(go.Heatmap(
@@ -30,26 +35,35 @@ def plot_variables(file_path):
             'Energy_Table_Proton': f['Energy_Table_Proton'][:].values
         }
     
+    # Convert and extend time data
+    time = data['UTC_TIME']
+    freq = data['A411'].shape[1] if len(data['A411'].shape) > 1 else 1
+    time = time[1:]
+    len_time = len(time)
+    time_extend = np.concatenate([np.linspace(time[i], time[i+1], freq, endpoint=False) for i in range(len_time - 1)])
+    time_extend = np.concatenate([time_extend, np.linspace(time[-2], time[-1], freq)])
+    utctimes = convert_to_utc_time(time_extend)
+    
     # Electron Energy Spectrum
     a411_data = np.reshape(data['A411'], (-1, 256, 9))
     a411_data_mean = np.mean(a411_data, axis=0)
-    plot_spectrogram(a411_data_mean, data['UTC_TIME'], np.arange(256), 
+    plot_spectrogram(a411_data_mean, utctimes, np.arange(256), 
                      "Electron Energy Spectrum", "Time (UTC)", "Energy (MeV)")
 
     # Electron Pitch Angle Spectrum
     a411_pitch_angle_mean = np.mean(a411_data, axis=1)
-    plot_spectrogram(a411_pitch_angle_mean, data['UTC_TIME'], np.arange(9), 
+    plot_spectrogram(a411_pitch_angle_mean, utctimes, np.arange(9), 
                      "Electron Pitch Angle Spectrum", "Time (UTC)", "Pitch Angle (degrees)")
 
     # Proton Energy Spectrum
     a412_data = np.reshape(data['A412'], (-1, 256, 9))
     a412_data_mean = np.mean(a412_data, axis=0)
-    plot_spectrogram(a412_data_mean, data['UTC_TIME'], np.arange(256), 
+    plot_spectrogram(a412_data_mean, utctimes, np.arange(256), 
                      "Proton Energy Spectrum", "Time (UTC)", "Energy (MeV)")
 
     # Proton Pitch Angle Spectrum
     a412_pitch_angle_mean = np.mean(a412_data, axis=1)
-    plot_spectrogram(a412_pitch_angle_mean, data['UTC_TIME'], np.arange(9), 
+    plot_spectrogram(a412_pitch_angle_mean, utctimes, np.arange(9), 
                      "Proton Pitch Angle Spectrum", "Time (UTC)", "Pitch Angle (degrees)")
 
 # Example usage with the provided file path
