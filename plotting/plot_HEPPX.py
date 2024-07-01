@@ -129,8 +129,8 @@ def plot_X_energy_spectrum_verse(path):
     verse_time = f.VERSE_TIME
     data = f.A413
 
-    log = False
     colormap = 'viridis'
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     # Catch all problems with frequency
     try:
@@ -139,15 +139,14 @@ def plot_X_energy_spectrum_verse(path):
         freq = 1
 
     # Remove the first element of the data (it sometimes gives weird values)
-    data = data.values[1:]
+    data = data.values[1:].astype(float)  # Ensure data is float type
     verse_time = verse_time.values[1:].flatten()
 
-    # Get the length to be able to plot it
-    len_time = len(verse_time)
+    # Set near-zero values to NaN
+    data[data < threshold] = np.nan
 
     # Transpose data for correct orientation
     data = data.T
-    data = np.log10(data+1)
 
     fig = go.Figure()
 
@@ -157,9 +156,7 @@ def plot_X_energy_spectrum_verse(path):
         y=f.Energy_Table_Xray.values.flatten(),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Log10(Particles/cm^2/s/kEV)'),
-        #zmin=0,  # np.min(data) if not log else None,
-        #zmax=0.5,  # np.max(data) if not log else None,
+        colorbar=dict(title='Particles/cm^2/s/kEV')
     ))
 
     # Create the layout
@@ -167,17 +164,17 @@ def plot_X_energy_spectrum_verse(path):
         title='X Energy Spectrum',
         xaxis_title="Verse Time (ms)",
         yaxis_title="Energy (kEV)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    return fig
-
-
+    fig.show()
 def plot_X_energy_spectrum_utc(path):
     f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
     time = f.UTC_TIME
     data = f.A413
 
-    log = False
     colormap = 'viridis'
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     def convert_to_utc_time(date_strings):
         utc_times = pd.to_datetime(date_strings, format="%Y%m%d%H%M%S%f", utc=True)
@@ -190,16 +187,19 @@ def plot_X_energy_spectrum_utc(path):
         freq = 1
 
     # Remove the first element of the data (it sometimes gives weird values)
-    data = data.values[1:]
+    data = data.values[1:].astype(float)  # Ensure data is float type
     time = time.values[1:].flatten()
 
-    # Get the length to be able to plot it
-    len_time = len(time)
-    utctimes = convert_to_utc_time(time)
+    # Set near-zero values to NaN
+    data[data < threshold] = np.nan
+
+    # Apply logarithmic transformation
+    #data = np.log10(data+1)
 
     # Transpose data for correct orientation
     data = data.T
-    data = np.log10(data+1)
+
+    utctimes = convert_to_utc_time(time)
 
     fig = go.Figure()
 
@@ -209,9 +209,7 @@ def plot_X_energy_spectrum_utc(path):
         y=np.arange(data.shape[0]),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Log10(Particles/cm^2/s/kEV)'),
-        #zmin=0,  # np.min(data) if not log else None,
-        #zmax=0.9,  # np.max(data) if not log else None,
+        colorbar=dict(title='Particles/cm^2/s/kEV')
     ))
 
     # Create the layout
@@ -219,23 +217,7 @@ def plot_X_energy_spectrum_utc(path):
         title='X Energy Spectrum',
         xaxis_title="Verse Time (ms)",
         yaxis_title="Energy (kEV)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    return fig
-
-
-def heppx_plot(f_path):
-    col1, col2 = st.columns(2)
-    with col1:
-        st.plotly_chart(plot_xray_count_verse_time(f_path))
-    with col2:
-        st.plotly_chart(plot_xray_count_utc_time(f_path))
-
-    st.plotly_chart(plot_X_energy_spectrum_utc(f_path))
-
-
-# In your Streamlit app
-if __name__ == '__main__':
-    st.title("X-Ray Data Visualization")
-    file_path = st.text_input("Enter the path to the HDF5 file:", "")
-    if file_path:
-        heppx_plot(file_path)
+    fig.show()
