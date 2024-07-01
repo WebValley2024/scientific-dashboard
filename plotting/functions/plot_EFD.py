@@ -14,7 +14,8 @@ from plotly.subplots import make_subplots
 import plotly.graph_objs as go
 
 # from reduce_frequency_test import reduce_frequency
-from functions.reduce_frequency_test import reduce_frequency
+# from reduce_frequency_test import reduce_frequency
+from plotting.functions.reducefreq import reduce_frequency
 
 import geopandas as gpd
 import pandas as pd

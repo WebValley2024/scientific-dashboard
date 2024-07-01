@@ -41,10 +41,6 @@ folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data'
 def dataset(path):
     try:
         ds = xr.open_zarr(path)
-        # if os.path.isdir(path):
-        #     ds = xr.open_zarr(path)
-        # else:
-        #     ds = xr.open_dataset(path, engine="h5netcdf", phony_dims='sort')  
         return ds
     except Exception as e:
         ds = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
@@ -176,9 +172,9 @@ def draw_map():
 
             #call function and pass coords and file path
             pathskidibidi = polygon(coords, file_selector())
-
+            st.write(pathskidibidi)
             pathskidibidi = check_Date_interval(pathskidibidi,start_date,end_date)
-
+            st.write(pathskidibidi)
             dataset_type = extract_dataset_type(pathskidibidi)
             print(dataset_type)
             st.write("ajdnajdkansjkdna")

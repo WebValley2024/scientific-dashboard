@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from functions.reduce_frequency_test import reduce_frequency
+from plotting.functions.reducefreq import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio
@@ -179,7 +179,7 @@ def plot_X_energy_spectrum_verse(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 def plot_X_energy_spectrum_utc(path):
     try:
         f = xr.open_zarr(path)
@@ -236,4 +236,14 @@ def plot_X_energy_spectrum_utc(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
+
+
+def heppx_plot(f_path):
+    col1, col2 = st.columns(2)
+    with col1:
+        st.plotly_chart(plot_xray_count_verse_time(f_path))
+    with col2:
+        st.plotly_chart(plot_xray_count_utc_time(f_path))
+
+    st.plotly_chart(plot_X_energy_spectrum_utc(f_path))
