@@ -296,6 +296,7 @@ def plot_electron_energy_verse(path):
     data = f.A411
     data = np.sum(data, axis=2)
     #data = reduce_frequency(data, 1)
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     log = False
     colormap='viridis'
@@ -309,6 +310,7 @@ def plot_electron_energy_verse(path):
     # Remove the first element of the data (it sometimes gives weird values)
     data = data.values[1:]
     verse_time = verse_time.values[1:].flatten()
+    data[data < threshold] = np.nan
 
     # Get the length to be able to plot it
     len_time = len(verse_time)
@@ -316,7 +318,7 @@ def plot_electron_energy_verse(path):
 
     # Transpose data for correct orientation
     data = data.T
-    data = np.log10(data+1)
+    #data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -328,7 +330,7 @@ def plot_electron_energy_verse(path):
         y=f.Energy_Table_Electron.values.flatten(),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        colorbar=dict(title='Particles/cm^2/s/str'),
         #zmin=0,#np.min(data) if not log else None,
         #zmax=0.8,#np.max(data) if not log else None,
         #zsmooth='best'
@@ -339,6 +341,8 @@ def plot_electron_energy_verse(path):
         title='Electron Energy Spectrum',
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Energy (KeV)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
     fig.show()
 
@@ -348,6 +352,7 @@ def plot_electron_energy_utc(path):
     data = f.A411
     data = np.sum(data, axis=2)
     #data = reduce_frequency(data, 1)
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     log = False
     colormap='viridis'
@@ -365,6 +370,7 @@ def plot_electron_energy_utc(path):
     # Remove the first element of the data (it sometimes gives weird values)
     data = data.values[1:]
     verse_time = verse_time.values[1:].flatten()
+    data[data < threshold] = np.nan
 
     # Get the length to be able to plot it
     len_time = len(verse_time)
@@ -374,7 +380,7 @@ def plot_electron_energy_utc(path):
 
     # Transpose data for correct orientation
     data = data.T
-    data = np.log10(data+1)
+    #data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -386,7 +392,7 @@ def plot_electron_energy_utc(path):
         y=f.Energy_Table_Electron.values.flatten(),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        colorbar=dict(title='Particles/cm^2/s/str'),
         #zmin=0,#np.min(data) if not log else None,
         #zmax=0.8,#np.max(data) if not log else None,
         #zsmooth='best'
@@ -397,6 +403,8 @@ def plot_electron_energy_utc(path):
         title='Electron Energy Spectrum',
         xaxis_title = "UTC Time",
         yaxis_title = "Energy (KeV)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
     fig.show()
 
