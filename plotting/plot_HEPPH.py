@@ -295,7 +295,7 @@ def plot_electron_energy_verse(path):
     verse_time = f.VERSE_TIME
     data = f.A411
     data = np.sum(data, axis=2)
-    #data = reduce_frequency(data, 1)
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     log = False
     colormap='viridis'
@@ -310,13 +310,15 @@ def plot_electron_energy_verse(path):
     data = data.values[1:]
     verse_time = verse_time.values[1:].flatten()
 
+    data[data < threshold] = np.nan
+
     # Get the length to be able to plot it
     len_time = len(verse_time)
 
 
     # Transpose data for correct orientation
     data = data.T
-    data = np.log10(data+1)
+    #data = np.log10(data)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -328,7 +330,7 @@ def plot_electron_energy_verse(path):
         y=f.Energy_Table_Electron.values.flatten(),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        colorbar=dict(title='Particles/cm^2/s/str'),
         #zmin=0,#np.min(data) if not log else None,
         #zmax=0.8,#np.max(data) if not log else None,
         #zsmooth='best'
@@ -339,6 +341,8 @@ def plot_electron_energy_verse(path):
         title='Electron Energy Spectrum',
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Energy (KeV)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
     fig.show()
 
@@ -348,6 +352,7 @@ def plot_electron_energy_utc(path):
     data = f.A411
     data = np.sum(data, axis=2)
     #data = reduce_frequency(data, 1)
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     log = False
     colormap='viridis'
@@ -365,6 +370,7 @@ def plot_electron_energy_utc(path):
     # Remove the first element of the data (it sometimes gives weird values)
     data = data.values[1:]
     verse_time = verse_time.values[1:].flatten()
+    data[data < threshold] = np.nan
 
     # Get the length to be able to plot it
     len_time = len(verse_time)
@@ -374,7 +380,7 @@ def plot_electron_energy_utc(path):
 
     # Transpose data for correct orientation
     data = data.T
-    data = np.log10(data+1)
+    #data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -386,7 +392,7 @@ def plot_electron_energy_utc(path):
         y=f.Energy_Table_Electron.values.flatten(),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        colorbar=dict(title='Particles/cm^2/s/str'),
         #zmin=0,#np.min(data) if not log else None,
         #zmax=0.8,#np.max(data) if not log else None,
         #zsmooth='best'
@@ -397,6 +403,8 @@ def plot_electron_energy_utc(path):
         title='Electron Energy Spectrum',
         xaxis_title = "UTC Time",
         yaxis_title = "Energy (KeV)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
     fig.show()
 
@@ -406,6 +414,7 @@ def plot_electron_pitch_verse(path):
     data = f.A411
     data = np.sum(data, axis=1)
     #data = reduce_frequency(data, 1)
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     log = False
     colormap='viridis'
@@ -419,6 +428,7 @@ def plot_electron_pitch_verse(path):
     # Remove the first element of the data (it sometimes gives weird values)
     data = data.values[1:]
     verse_time = verse_time.values[1:].flatten()
+    data[data < threshold] = np.nan
 
     # Get the length to be able to plot it
     len_time = len(verse_time)
@@ -449,6 +459,8 @@ def plot_electron_pitch_verse(path):
         title='Electron Pitch Angle',
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Pitch (degree)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
     fig.show()
 
@@ -458,6 +470,7 @@ def plot_electron_pitch_utc(path):
     data = f.A411
     data = np.sum(data, axis=1)
     #data = reduce_frequency(data, 1)
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     log = False
     colormap='viridis'
@@ -475,6 +488,7 @@ def plot_electron_pitch_utc(path):
     # Remove the first element of the data (it sometimes gives weird values)
     data = data.values[1:]
     verse_time = verse_time.values[1:].flatten()
+    data[data < threshold] = np.nan
 
     # Get the length to be able to plot it
     len_time = len(verse_time)
@@ -507,6 +521,8 @@ def plot_electron_pitch_utc(path):
         title='Electron Pitch Angle',
         xaxis_title = "UTC Time",
         yaxis_title = "Pitch Angle (degree)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
     fig.show()
 def plot_proton_energy_verse(path):
@@ -515,6 +531,7 @@ def plot_proton_energy_verse(path):
     data = f.A412
     data = np.sum(data, axis=2)
     #data = reduce_frequency(data, 1)
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     log = False
     colormap='viridis'
@@ -528,6 +545,7 @@ def plot_proton_energy_verse(path):
     # Remove the first element of the data (it sometimes gives weird values)
     data = data.values[1:]
     verse_time = verse_time.values[1:].flatten()
+    data[data < threshold] = np.nan
 
     # Get the length to be able to plot it
     len_time = len(verse_time)
@@ -535,7 +553,7 @@ def plot_proton_energy_verse(path):
 
     # Transpose data for correct orientation
     data = data.T
-    data = np.log10(data+1)
+    #data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -547,7 +565,7 @@ def plot_proton_energy_verse(path):
         y=f.Energy_Table_Proton.values.flatten(),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        colorbar=dict(title='Particles/cm^2/s/str'),
         #zmin=0,#np.min(data) if not log else None,
         #zmax=0.3,#np.max(data) if not log else None,
         #zsmooth='best'
@@ -558,6 +576,8 @@ def plot_proton_energy_verse(path):
         title='Proton Energy Spectrum',
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Energy (KeV)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
     fig.show()
 
@@ -567,6 +587,7 @@ def plot_proton_energy_utc(path):
     data = f.A412
     data = np.sum(data, axis=2)
     #data = reduce_frequency(data, 1)
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     log = False
     colormap='viridis'
@@ -584,6 +605,7 @@ def plot_proton_energy_utc(path):
     # Remove the first element of the data (it sometimes gives weird values)
     data = data.values[1:]
     verse_time = verse_time.values[1:].flatten()
+    data[data < threshold] = np.nan
 
     # Get the length to be able to plot it
     len_time = len(verse_time)
@@ -593,7 +615,7 @@ def plot_proton_energy_utc(path):
 
     # Transpose data for correct orientation
     data = data.T
-    data = np.log10(data+1)
+    #data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
@@ -605,7 +627,7 @@ def plot_proton_energy_utc(path):
         y=f.Energy_Table_Proton.values.flatten(),
         z=data,
         colorscale=colormap,
-        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        colorbar=dict(title='Particles/cm^2/s/str'),
         #zmin=0,#np.min(data) if not log else None,
         #zmax=0.3,#np.max(data) if not log else None,
         #zsmooth='best'
@@ -615,7 +637,9 @@ def plot_proton_energy_utc(path):
     fig.update_layout(go.Layout(
         title='Proton Energy Spectrum',
         xaxis_title = "UTC Time",
-        yaxis_title = "Energy (KeV) CHECK UNIT!",
+        yaxis_title = "Energy (KeV)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
     fig.show()
 
@@ -625,6 +649,8 @@ def plot_proton_pitch_verse(path):
     data = f.A412
     data = np.sum(data, axis=1)
     #data = reduce_frequency(data, 1)
+    threshold = 1e-10  # Define a threshold for near-zero values
+    
 
     log = False
     colormap='viridis'
@@ -638,6 +664,7 @@ def plot_proton_pitch_verse(path):
     # Remove the first element of the data (it sometimes gives weird values)
     data = data.values[1:]
     verse_time = verse_time.values[1:].flatten()
+    data[data < threshold] = np.nan
 
     # Get the length to be able to plot it
     len_time = len(verse_time)
@@ -647,7 +674,7 @@ def plot_proton_pitch_verse(path):
     data = data.T
     #verse_time = verse_time.T
     #print(verse_time)
-    data = np.log10(data+1)
+    #data = np.log10(data+1)
 
     fig = go.Figure()
 
@@ -668,6 +695,8 @@ def plot_proton_pitch_verse(path):
         title='Proton Pitch Angle',
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Pitch (degree)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
     fig.show()
 
@@ -677,6 +706,7 @@ def plot_proton_pitch_utc(path):
     data = f.A412
     data = np.sum(data, axis=1)
     #data = reduce_frequency(data, 1)
+    threshold = 1e-10  # Define a threshold for near-zero values
 
     log = True
     colormap='viridis'
@@ -694,6 +724,7 @@ def plot_proton_pitch_utc(path):
     # Remove the first element of the data (it sometimes gives weird values)
     data = data.values[1:]
     verse_time = verse_time.values[1:].flatten()
+    data[data < threshold] = np.nan
 
     # Get the length to be able to plot it
     len_time = len(verse_time)
@@ -705,7 +736,7 @@ def plot_proton_pitch_utc(path):
     data = data.T
     #verse_time = verse_time.T
     #print(verse_time)
-    log_data = np.log10(data + 1)  # Adding 1 to avoid log(0) issues
+    #log_data = np.log10(data + 1)  # Adding 1 to avoid log(0) issues
 
     fig = go.Figure()
 
@@ -713,14 +744,14 @@ def plot_proton_pitch_utc(path):
     fig.add_trace(go.Heatmap(
         x=utctimes,
         y=f.PitchAngle.values.flatten(),
-        z=log_data,
+        z=data,
         colorscale=colormap,
-        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        colorbar=dict(title='Particles/cm^2/s/str'),
         #zmin=0,#np.min(data) if not log else None,
         #4,#np.max(data) if not log else None,
         #zsmooth='best'
-        zmin=np.min(log_data),
-        zmax=np.max(log_data),
+        zmin=np.min(data),
+        zmax=np.max(data),
     ))
 
     # Create the layout
@@ -728,5 +759,7 @@ def plot_proton_pitch_utc(path):
         title='Proton Pitch Angle',
         xaxis_title = "UTC Time",
         yaxis_title = "Pitch Angle (degree)",
+        xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
+        yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
     fig.show()
