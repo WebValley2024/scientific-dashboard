@@ -338,7 +338,7 @@ def plot_electron_energy_verse(path):
     fig.update_layout(go.Layout(
         title='Electron Energy Spectrum',
         xaxis_title = "Verse Time (ms)",
-        yaxis_title = "Energy (KeV) CHECK UNIT!",
+        yaxis_title = "Energy (KeV)",
     ))
     fig.show()
 
@@ -557,7 +557,7 @@ def plot_proton_energy_verse(path):
     fig.update_layout(go.Layout(
         title='Proton Energy Spectrum',
         xaxis_title = "Verse Time (ms)",
-        yaxis_title = "Energy (KeV) CHECK UNIT!",
+        yaxis_title = "Energy (KeV)",
     ))
     fig.show()
 
