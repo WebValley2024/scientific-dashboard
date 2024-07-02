@@ -13,13 +13,34 @@ paths = [
 ]
 
 def plot_sequential_EFD(paths):
-    fig = make_subplots(rows=len(paths), cols=1, shared_xaxes=True, vertical_spacing=0.1, specs=[[{"secondary_y": True}] for _ in range(len(paths))])
+    # Initialize empty lists to store figures
+    all_fig1 = []
+    all_fig2 = []
     
-    for path in enumerate(paths):
-        i = plot_EFD(path)
-        fig = fig+i
+    # Loop through each path and plot EFD
+    for path in paths:
+        try:
+            fig1, fig2 = plot_EFD(path)  # Assuming plot_EFD returns fig1 and fig2
+            all_fig1.append(fig1)
+            all_fig2.append(fig2)
+        except Exception as e:
+            st.error(f"Error processing {path}: {str(e)}")
     
-    fig.update_layout(height=300*len(paths), title_text="Sequential EFD Plots")
-    st.plotly_chart(fig)
+    # Concatenate fig1 and fig2 along the x-axis
+    fig_combined = make_subplots(rows=1, cols=2, shared_xaxes=True, vertical_spacing=0.1)
+    
+    for fig1 in all_fig1:
+        for trace in fig1.data:
+            fig_combined.add_trace(trace, row=1, col=1)
+    '''
+    for fig2 in all_fig2:
+        for trace in fig2.data:
+            fig_combined.add_trace(trace, row=2, col=1)
+    '''
+    # Update layout
+    fig_combined.update_layout(height=600, title_text="Combined EFD Plots")
+    
+    # Plot using Streamlit
+    fig_combined.show()
 
 plot_sequential_EFD(paths)

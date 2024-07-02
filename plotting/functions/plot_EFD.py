@@ -203,4 +203,4 @@ def plot_EFD(path):
 
     with col2:
         st.plotly_chart(fig2)
-    return fig, fig2
+    return fig1, fig2
