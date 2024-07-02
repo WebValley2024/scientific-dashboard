@@ -4,7 +4,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from .reducefreq import reduce_frequency
+from functions.reduce_frequency_test import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio
