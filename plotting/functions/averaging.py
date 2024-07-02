@@ -106,7 +106,7 @@ fig = plot_proton_electron_count_verse_time("/home/wvuser/compressed_data/HEPP_H
 fig = add_stats_trace(stats, fig)
 fig
 """
-def add_stats_trace(stats, fig):
+def add_stats_trace(stats, fig, median_name = "Median"):
     median_array = stats[0]
     quartile_25 = stats[1]
     quartile_75 = stats[2]
@@ -114,7 +114,7 @@ def add_stats_trace(stats, fig):
     # Add trace for median
     fig.add_trace(go.Scatter(y=median_array,x=x_values,
                                 mode='lines',
-                                name='Median'))
+                                name=median_name))
 
     # Add trace for quartiles
     fig.add_trace(go.Scatter(y=quartile_25, x=x_values,
