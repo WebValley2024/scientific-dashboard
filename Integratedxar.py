@@ -28,7 +28,7 @@ from plotting.functions.plot_HEPPH import plotheph
 from plotting.functions.plot_HEPPD import plot_HEPD
 # from plotting.functions.plot_HEPPD import 
 
-folder_path = '/home/wvuser/cses_personal_data'
+folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/EFD'
 
 def dataset(path):
     try:
@@ -94,7 +94,7 @@ def search_files(st_map, start_date, end_date):
 
 def plotting_selector(intersection_files, coordinates):
     dataset_type = extract_dataset_type(intersection_files)
-    option = st.multiselect("Instrument Type", (" ", "EFD", "SCM", "LAP", "HEP_1", "HEP_4", "HEP_2", "HEP_3"))
+    option = st.multiselect("Instrument Type", (" ", "EFD", "SCM", "LAP", "HEP_1", "HEP_4", "HEP_2", "HEP_DDD"))
     if st.button("plot"):
         if option:
             for dataset in dataset_type:
@@ -114,7 +114,7 @@ def plotting_selector(intersection_files, coordinates):
                     elif dataset_type == 'HEP_2' == sensors:
                         st.write("test")
                         plotheph(file_path)
-                    elif dataset_type == 'HEP_3' == sensors:
+                    elif dataset_type == 'HEP_DDD' == sensors:
                         st.write("test")
                         plot_HEPD(file_path)
 
@@ -200,7 +200,7 @@ def extract_dataset_type(file_paths):
             raise ValueError(f"Unknown dataset type in file name: {file_name}")
     return dataset_types
 
-def file_selector(folder_path='/home/wvuser/cses_personal_data'):
+def file_selector(folder_path='/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/EFD'):
     filenames = os.listdir(folder_path)
     file_paths = [os.path.join(folder_path, filename) for filename in filenames if os.path.isfile(os.path.join(folder_path, filename))]
     return file_paths
