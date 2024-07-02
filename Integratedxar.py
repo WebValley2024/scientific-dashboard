@@ -196,6 +196,8 @@ def extract_dataset_type(file_paths):
             dataset_types.append([file_path, 'HEP_1'])
         elif 'HEP_2' in file_name:
             dataset_types.append([file_path, 'HEP_2'])
+        elif 'HEP_DDD' in file_name:
+            dataset_types.append([file_path, 'HEP_DDD'])
         else:
             raise ValueError(f"Unknown dataset type in file name: {file_name}")
     return dataset_types
