@@ -12,7 +12,7 @@ def reduce_frequency(data, factor):
 
 def lap_plot(f_paths):
     # Create a subplots with two rows and one column, specifying secondary_y=True for each subplot
-    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, specs=[[{"secondary_y": True}], [{"secondary_y": True}]])
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.05, specs=[[{"secondary_y": True}], [{"secondary_y": True}]])
     
     # Function to plot Electron Temperature and Electron Density over UTC time
     def plot_twin_timeline_utc(fig, paths):
