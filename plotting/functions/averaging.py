@@ -84,9 +84,27 @@ def plot_med_quantile(stats):
     return fig
 
 
+
+
 """
 takes as input the stats (output of get_med_quantile()) and the figure the stats should get plottet in.
 returns the figure with the summarized data as a trace included
+example call:
+
+pathlist = ["/home/wvuser/compressed_data/HEPP_H/CSES_01_HEP_2_L02_A4_027321_20180731_233426_20180801_001122_000.zarr.zip","/home/wvuser/compressed_data/HEPP_H/CSES_01_HEP_2_L02_A4_027330_20180801_002138_20180801_005850_000.zarr.zip", "/home/wvuser/compressed_data/HEPP_H/CSES_01_HEP_2_L02_A4_027331_20180801_010906_20180801_014602_000.zarr.zip", "/home/wvuser/compressed_data/HEPP_H/CSES_01_HEP_2_L02_A4_027340_20180801_015626_20180801_023330_000.zarr.zip" ]
+filelist = []
+for p in pathlist:
+    f= xr.open_zarr(p)
+    try:
+        f=f.rename({"Count_electron":"Count_Electron"})
+        f=f.rename({"Count_proton": "Count_Proton"})
+    except:
+        pass
+    filelist.append(f)
+stats = get_med_quantile(filelist, "Count_Electron")
+fig = plot_proton_electron_count_verse_time("/home/wvuser/compressed_data/HEPP_H/CSES_01_HEP_2_L02_A4_027321_20180731_233426_20180801_001122_000.zarr.zip")
+fig = add_stats_trace(stats, fig)
+fig
 """
 def add_stats_trace(stats, fig):
     median_array = stats[0]
