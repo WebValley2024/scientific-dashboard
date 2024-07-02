@@ -28,6 +28,10 @@ from shapely import geometry
 from glob import glob
 import datetime
 
+def convert_to_utc_time(date_strings):
+        utc_times = pd.to_datetime(date_strings, format="%Y%m%d%H%M%S%f", utc=True)
+        return utc_times
+
 def plot_EFD(path):
     try:
         f = xr.open_zarr(path)
@@ -51,6 +55,7 @@ def plot_EFD(path):
     # Convert angles to degrees
     polar_angle = np.degrees(polar_angle)
     azimuthal_angle = np.degrees(azimuthal_angle)
+    UTC_TIMEstr= f['UTC_TIME'][...]
  
     reduced_freq = 100  # Specify the desired frequency here
     X_Waveform = reduce_frequency(X_Waveform, reduced_freq)
@@ -73,6 +78,7 @@ def plot_EFD(path):
     vers_extend = np.concatenate([np.linspace(verse_time[i], verse_time[i+1], reduced_freq, endpoint=False) for i in range(len_time-1)])
     vers_extend = np.concatenate([vers_extend, np.linspace(verse_time[-2], verse_time[-1], reduced_freq)])
     # First figure for waveforms and magnitude
+    vers_extend = convert_to_utc_time(UTC_TIMEstr)
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=vers_extend, y=X_Waveform, mode='lines', name='X Waveform'))
     fig1.add_trace(go.Scatter(x=vers_extend, y=Y_Waveform, mode='lines', name='Y Waveform'))
