@@ -3,22 +3,17 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from plotting.functions.reducefreq import reduce_frequency
+from reducefreq import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio
-import streamlit as st
 
 
 #all these methods take path to a zarr-File!!
 #TODO: both plot-against-time-methods do seperate scales for protons and electrons. 
 # do we want it that way??
 def plot_proton_electron_count_verse_time(path):
-    try:
-        f = xr.open_zarr(path)
-    except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
-
+    f = xr.open_zarr(path)
     verse_time = f.VERSE_TIME
     try:
         data = f.Count_electron
@@ -73,16 +68,11 @@ def plot_proton_electron_count_verse_time(path):
         width=800,
         height=600,
     )
-    st.plotly_chart(fig)
-    # fig.show()
+    fig.show()
 
 def plot_proton_electron_count_utc(path):
 
-    try:
-        f = xr.open_zarr(path)
-    except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
-
+    f = xr.open_zarr(path)
     time = f.UTC_TIME
     try:
         data = f.Count_electron
@@ -151,15 +141,11 @@ def plot_proton_electron_count_utc(path):
         width=800,
         height=600
     )
-    st.plotly_chart(fig)
-    # fig.show()
+
+    fig.show()
 
 def plot_on_map_electron_count(path):
-    try:
-        f = xr.open_zarr(path)
-    except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
-
+    f = xr.open_zarr(path)
     latitude = f.GEO_LAT
     longitude = f.GEO_LON
     try:
@@ -228,17 +214,11 @@ def plot_on_map_electron_count(path):
         height=600,
     )
     fig.update_layout(title = "Electron Counts", template="plotly_white")
-    st.plotly_chart(fig)
 
-    # fig.show()
+    fig.show()
 
 def plot_on_map_proton_count(path):
-    try:
-        f = xr.open_zarr(path)
-    except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
-
-
+    f = xr.open_zarr(path)
     latitude = f.GEO_LAT
     longitude = f.GEO_LON
     try:
@@ -307,16 +287,11 @@ def plot_on_map_proton_count(path):
         height=600,
     )
     fig.update_layout(title = "Proton Counts", template="plotly_white")
-    st.plotly_chart(fig)
 
-    # fig.show()
+    fig.show()
 
 def plot_electron_energy_verse(path):
-    try:
-        f = xr.open_zarr(path)
-    except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
-
+    f = xr.open_zarr(path)
     verse_time = f.VERSE_TIME
     data = f.A411
     data = np.sum(data, axis=2)
@@ -369,14 +344,10 @@ def plot_electron_energy_verse(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    st.plotly_chart(fig)
+    fig.show()
 
 def plot_electron_energy_utc(path):
-    try:
-        f = xr.open_zarr(path)
-    except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
-
+    f = xr.open_zarr(path)
     verse_time = f.UTC_TIME
     data = f.A411
     data = np.sum(data, axis=2)
@@ -435,14 +406,10 @@ def plot_electron_energy_utc(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    st.plotly_chart(fig)
+    fig.show()
 
 def plot_electron_pitch_verse(path):
-    try:
-        f = xr.open_zarr(path)
-    except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
-
+    f = xr.open_zarr(path)
     verse_time = f.VERSE_TIME
     data = f.A411
     data = np.sum(data, axis=1)
@@ -467,22 +434,117 @@ def plot_electron_pitch_verse(path):
 
     # Transpose data for correct orientation
     data = data.T
-    data = np.log10(data+1)
+    #data = np.log10(data+1)
     #verse_time = verse_time.T
     #print(verse_time)
 
     fig = go.Figure()
 
+       # Initialize arrays to hold combined y and z values
+    combined_y_values = []
+    combined_z_values = []
+    cmin = np.min(data)
+    cmax = np.max(data)
+
+
     # Create the heatmap
     fig.add_trace(go.Heatmap(
         x=verse_time,
-        y=f.PitchAngle.values.flatten(),
-        z=data,
+        y=f.PitchAngle.values[:,0][100:],
+        z=data[0,:],
         colorscale=colormap,
         colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
-        #zmin=0,#np.min(data) if not log else None,
-        #zmax=10,#np.max(data) if not log else None,
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
         #zsmooth='best'
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,1][100:],
+        z=data[1,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,2][100:],
+        z=data[2,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,3][100:],
+        z=data[3,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,4][100:],
+        z=data[4,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,5][100:],
+        z=data[5,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,6][100:],
+        z=data[6,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,7][100:],
+        z=data[7,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,8][100:],
+        z=data[8,:],
+        colorscale=colormap,
+        colorbar=dict(title='Particles/cm^2/s/str'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
     ))
 
     # Create the layout
@@ -491,15 +553,11 @@ def plot_electron_pitch_verse(path):
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Pitch (degree)",
     ))
-    st.plotly_chart(fig)
+    fig.show()
 
 
 def plot_proton_energy_verse(path):
-    try:
-        f = xr.open_zarr(path)
-    except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
-
+    f = xr.open_zarr(path)
     verse_time = f.VERSE_TIME
     data = f.A412
     data = np.sum(data, axis=2)
@@ -548,14 +606,10 @@ def plot_proton_energy_verse(path):
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Energy (KeV)",
     ))
-    st.plotly_chart(fig)
+    fig.show()
 
 def plot_proton_energy_utc(path):
-    try:
-        f = xr.open_zarr(path)
-    except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
-
+    f = xr.open_zarr(path)
     verse_time = f.UTC_TIME
     data = f.A412
     data = np.sum(data, axis=2)
@@ -610,5 +664,152 @@ def plot_proton_energy_utc(path):
         xaxis_title = "UTC Time",
         yaxis_title = "Energy (KeV) CHECK UNIT!",
     ))
-    st.plotly_chart(fig)
+    fig.show()
 
+
+def plot_proton_pitch_verse(path):
+    f = xr.open_zarr(path)
+    verse_time = f.VERSE_TIME
+    data = f.A412
+    data = np.sum(data, axis=1)
+    #data = reduce_frequency(data, 1)
+
+    log = False
+    colormap='viridis'
+
+    # Catch all problems with frequency
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values)
+    data = data.values[1:]
+    verse_time = verse_time.values[1:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+
+    # Transpose data for correct orientation
+    data = data.T
+    #data = np.log10(data+1)
+    #verse_time = verse_time.T
+    #print(verse_time)
+
+    fig = go.Figure()
+
+       # Initialize arrays to hold combined y and z values
+    combined_y_values = []
+    combined_z_values = []
+    cmin = np.min(data)
+    cmax = np.max(data)
+
+
+    # Create the heatmap
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,0][100:],
+        z=data[0,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        #zsmooth='best'
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,1][100:],
+        z=data[1,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,2][100:],
+        z=data[2,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,3][100:],
+        z=data[3,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,4][100:],
+        z=data[4,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,5][100:],
+        z=data[5,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,6][100:],
+        z=data[6,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,7][100:],
+        z=data[7,:],
+        colorscale=colormap,
+        colorbar=dict(title='Log10(Particles/cm^2/s/str)'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+    fig.add_trace(go.Heatmap(
+        x=verse_time,
+        y=f.PitchAngle.values[:,8][100:],
+        z=data[8,:],
+        colorscale=colormap,
+        colorbar=dict(title='Particles/cm^2/s/str'),
+        zmin=cmin,#np.min(data) if not log else None,
+        zmax=cmax,#np.max(data) if not log else None,
+        showscale=False
+
+    ))
+
+    # Create the layout
+    fig.update_layout(go.Layout(
+        title='Electron Pitch Angle',
+        xaxis_title = "Verse Time (ms)",
+        yaxis_title = "Pitch (degree)",
+    ))
+    fig.show()

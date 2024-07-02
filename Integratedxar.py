@@ -25,8 +25,10 @@ from plotting.functions.plot_LAP import lap_plot
 from plotting.functions.plot_HEPPX import heppx_plot
 from plotting.functions.plot_SCM import scmplot
 from plotting.functions.plot_HEPPH import plotheph
+from plotting.functions.plot_HEPPD import plot_HEPD
+# from plotting.functions.plot_HEPPD import 
 
-folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/EFD'
+folder_path = '/home/wvuser/cses_personal_data'
 
 def dataset(path):
     try:
@@ -92,7 +94,7 @@ def search_files(st_map, start_date, end_date):
 
 def plotting_selector(intersection_files, coordinates):
     dataset_type = extract_dataset_type(intersection_files)
-    option = st.multiselect("Instrument Type", (" ", "EFD", "SCM", "LAP", "HEP_1", "HEP_4", "HEP_2"))
+    option = st.multiselect("Instrument Type", (" ", "EFD", "SCM", "LAP", "HEP_1", "HEP_4", "HEP_2", "HEP_DDD"))
     if st.button("plot"):
         if option:
             for dataset in dataset_type:
@@ -112,6 +114,10 @@ def plotting_selector(intersection_files, coordinates):
                     elif dataset_type == 'HEP_2' == sensors:
                         st.write("test")
                         plotheph(file_path)
+                    elif dataset_type == 'HEP_DDD' == sensors:
+                        st.write("test")
+                        plot_HEPD(file_path)
+
     min_lat, max_lat = calculate_extremes(coordinates)
     st.write(f"Leftmost Latitude: {min_lat:.6f}")
     st.write(f"Rightmost Latitude: {max_lat:.6f}")
@@ -146,8 +152,19 @@ def polygon(points, files):
     lon_min, lon_max = min(longitudes), max(longitudes)
     for file in files:
         ds = dataset(file)
-        geo_lat = ds.GEO_LAT
-        geo_lon = ds.GEO_LON
+        try:
+            geo_lat = ds.GEO_LAT
+            geo_lon = ds.GEO_LON
+        except:
+            if ds.LonLat.ndim == 3:
+                geo_lon = ds.LonLat[0, 0, :]
+                geo_lat = ds.LonLat[0, 0, :]
+            elif ds.LonLat.ndim == 2:
+                geo_lon = ds.LonLat[:, 0]
+                geo_lat = ds.LonLat[:, 1]
+            else:
+                raise ValueError("Unexpected LonLat dimensions")
+
         lat_mask = (geo_lat >= lat_min) & (geo_lat <= lat_max)
         lon_mask = (geo_lon >= lon_min) & (geo_lon <= lon_max)
         final_mask = lat_mask & lon_mask
@@ -179,11 +196,13 @@ def extract_dataset_type(file_paths):
             dataset_types.append([file_path, 'HEP_1'])
         elif 'HEP_2' in file_name:
             dataset_types.append([file_path, 'HEP_2'])
+        elif 'HEP_DDD' in file_name:
+            dataset_types.append([file_path, 'HEP_DDD'])
         else:
             raise ValueError(f"Unknown dataset type in file name: {file_name}")
     return dataset_types
 
-def file_selector(folder_path='/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/EFD'):
+def file_selector(folder_path='/home/wvuser/cses_personal_data'):
     filenames = os.listdir(folder_path)
     file_paths = [os.path.join(folder_path, filename) for filename in filenames if os.path.isfile(os.path.join(folder_path, filename))]
     return file_paths
