@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 from plot_HEPPL import plot_proton_electron_count_verse_time 
 
-paths = []
+paths = ["/home/wvuser/HEPL/._CSES_01_HEP_1_L02_A4_272621_20221231_193730_20221231_201438_000.zarr.zip", "/home/wvuser/HEPL/._CSES_01_HEP_1_L02_A4_272621_20221231_200321_20221231_201114_000.zarr.zip", "/home/wvuser/HEPL/._CSES_01_HEP_1_L02_A4_272630_20221231_202454_20221231_210153_000.zarr.zip", "/home/wvuser/HEPL/._CSES_01_HEP_1_L02_A4_272631_20221231_211214_20221231_214922_000.zarr.zip", "/home/wvuser/HEPL/._CSES_01_HEP_1_L02_A4_272631_20221231_213653_20221231_214504_000.zarr.zip"]
 
 def plot_sequential_HEPPL(paths):
     # Initialize empty lists to store figures
