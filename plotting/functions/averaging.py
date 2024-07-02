@@ -103,7 +103,7 @@ for p in pathlist:
     filelist.append(f)
 stats = get_med_quantile(filelist, "Count_Electron")
 fig = plot_proton_electron_count_verse_time("/home/wvuser/compressed_data/HEPP_H/CSES_01_HEP_2_L02_A4_027321_20180731_233426_20180801_001122_000.zarr.zip")
-fig = add_stats_trace(stats, fig)
+fig = add_stats_trace(stats, fig, "Median Electron Count")
 fig
 """
 def add_stats_trace(stats, fig, median_name = "Median"):
