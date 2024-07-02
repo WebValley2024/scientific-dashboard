@@ -50,7 +50,8 @@ def get_med_quantile(filelist, sensor):
 
 """
 takes as input the output of get_med_quantile() and returns a figure containing the median and the quantiles.
-the title of the axes and the plot itself are to be added before showing the figure.
+the title of the axes and the plot and what is to be displayed on the axes 
+have to be added before showing the figure.
 """
 def plot_med_quantile(stats):
     median_array = stats[0]
@@ -85,3 +86,4 @@ def plot_med_quantile(stats):
     fig.update_layout(template='plotly_white')
 
     return fig
+
