@@ -70,6 +70,7 @@ def plot_proton_electron_count_verse_time(path):
         height=600,
     )
     st.plotly_chart(fig)
+    return fig
 
 def plot_proton_electron_count_utc(path):
 
