@@ -20,10 +20,10 @@ from shapely import geometry
 import streamlit as st
 from streamlit_folium import st_folium
 
-from plotting.plot_EFD import plot_EFD
-from plotting.plot_LAP import lap_plot
-from plotting.plot_HEPPX import heppx_plot
-from plotting.plot_SCM import scmplot
+from plotting.functions.plot_EFD import plot_EFD
+from plotting.functions.plot_LAP import lap_plot
+from plotting.functions.plot_HEPPX import heppx_plot
+from plotting.functions.plot_SCM import scmplot
 #REPLACE
 folder_path = '/home/wvuser/scientific-dashboard/dataCSES'
 
