@@ -404,6 +404,55 @@ def plot_protons_counts_on_map(path):
 #LonLat= f.LonLat
 #f = xr.open_zarr(path)
 #f
+
+def aggregate_HEPPD_electron_proton(files, count_type='electron'):
+    fig = go.Figure()
+ 
+    for file in files:
+        f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+ 
+        # Extract the required variables
+        LonLat = f.LonLat
+        if LonLat.ndim == 3:
+            latitude = LonLat[0, 0, :]
+        elif LonLat.ndim == 2:
+            latitude = LonLat[:, 1]
+ 
+        if count_type == 'electron':
+            try:
+                count_data = f['HEPD_ele_counts'][...]
+            except:
+                count_data = f['Count_Electron'][...]
+        else:
+            try:
+                count_data = f['HEPD_pro_counts'][...]
+            except:
+                count_data = f['Count_Proton'][...]
+ 
+        # Flatten the data for plotting
+        latitude = latitude.values.flatten()
+        count_data = count_data.values.flatten()
+ 
+        # Plot the data
+        fig.add_trace(
+            go.Scatter(x=latitude, y=count_data, mode='lines', name=file)
+        )
+ 
+    # Configure the layout
+    if count_type == 'electron':
+        y_axis_title = "Electron Count"
+    else:
+        y_axis_title = "Proton Count"
+ 
+    fig.update_layout(
+        title=f"{y_axis_title} vs GEO_LAT",
+        xaxis_title="GEO_LAT",
+        yaxis_title=y_axis_title,
+        template="plotly_white"
+    )
+ 
+    return fig
+
 def plot_HEPD(file_path):
     plot_proton_electron_count_utc(file_path)
     plot_electron_energy_utc(file_path)
