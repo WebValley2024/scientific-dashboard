@@ -146,8 +146,19 @@ def polygon(points, files):
     lon_min, lon_max = min(longitudes), max(longitudes)
     for file in files:
         ds = dataset(file)
-        geo_lat = ds.GEO_LAT
-        geo_lon = ds.GEO_LON
+        try:
+            geo_lat = ds.GEO_LAT
+            geo_lon = ds.GEO_LON
+        except:
+            if ds.LonLat.ndim == 3:
+                geo_lon = ds.LonLat[0, 0, :]
+                geo_lat = ds.LonLat[0, 0, :]
+            elif ds.LonLat.ndim == 2:
+                geo_lon = ds.LonLat[:, 0]
+                geo_lat = ds.LonLat[:, 1]
+            else:
+                raise ValueError("Unexpected LonLat dimensions")
+
         lat_mask = (geo_lat >= lat_min) & (geo_lat <= lat_max)
         lon_mask = (geo_lon >= lon_min) & (geo_lon <= lon_max)
         final_mask = lat_mask & lon_mask
