@@ -238,6 +238,41 @@ def plot_X_energy_spectrum_utc(path):
     ))
     st.plotly_chart(fig)
 
+# not sure if this works
+ 
+def aggregated_HEPPX_xray(files):
+ 
+    fig = go.Figure()
+ 
+    for file in files:
+        f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+ 
+        # Extract the required variables
+        latitude = f['GEO_LAT'][...]
+ 
+        count_data = f['XrayRate']
+ 
+        # Flatten the data for plotting
+        latitude = latitude.values.flatten()
+        count_data = count_data.values.flatten()
+ 
+        # Plot the data
+        fig.add_trace(
+            go.Scatter(x=latitude, y=count_data, mode='lines', name=file)
+        )
+ 
+    # Configure the layout
+    y_axis_title = "XRay Count"
+ 
+    fig.update_layout(
+        title=f"{y_axis_title} vs GEO_LAT",
+        xaxis_title="GEO_LAT",
+        yaxis_title=y_axis_title,
+        template="plotly_white"
+    )
+ 
+    return fig
+
 
 def heppx_plot(f_path):
     if not f_path:
