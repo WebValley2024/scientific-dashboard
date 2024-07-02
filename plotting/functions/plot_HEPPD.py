@@ -1,4 +1,4 @@
-
+import streamlit as st
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -84,7 +84,7 @@ def plot_proton_electron_count_utc(path):
         height=600
     )
  
-    fig.show()
+    st.plotly_chart(fig)
 plot_proton_electron_count_utc(path)
  
 
@@ -144,7 +144,7 @@ def plot_electron_energy_utc(path):
         yaxis_title=f"{f.HEPD_ele_energy_table.Units}",
         yaxis=dict(type='log', title='Electron Energy (MeV)')
     )
-    fig.show()
+    st.plotly_chart(fig)
 plot_electron_energy_utc(path)
 #f = xr.open_dataset(path, phony_dims='sort')
 #f
@@ -206,7 +206,7 @@ def plot_proton_energy_utc(path):
         yaxis_title=f"{f.HEPD_pro_energy_table.Units}",
         yaxis=dict(type='log', title='Electron Energy (MeV)')
     )
-    fig.show()
+    st.plotly_chart(fig)
 plot_proton_energy_utc(path)
 #f = xr.open_dataset(path, phony_dims='sort')
  
@@ -303,7 +303,7 @@ def plot_electrons_counts_on_map(path):
         margin={"r":0,"t":30,"l":0,"b":0},
         showlegend=False
     )
-    fig.show()
+    st.plotly_chart(fig)
  
 #f = xr.open_dataset(path, phony_dims='sort')
 #LonLat= f.LonLat
@@ -404,11 +404,16 @@ def plot_protons_counts_on_map(path):
         margin={"r":0,"t":30,"l":0,"b":0},
         showlegend=False
     )
-    fig.show()
+    st.plotly_chart(fig)
  
 #f = xr.open_dataset(path, phony_dims='sort')
 #LonLat= f.LonLat
 plot_protons_counts_on_map(path)
 #f = xr.open_zarr(path)
 #f
- 
+def plot_HEPD(file_path):
+    plot_proton_electron_count_utc(file_path)
+    plot_electron_energy_utc(path)
+    plot_proton_energy_utc(path)
+    plot_electrons_counts_on_map(path)
+    plot_protons_counts_on_map(path)
