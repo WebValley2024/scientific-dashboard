@@ -8,7 +8,7 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from plotting.functions.reducefreq import reduce_frequency
+from reducefreq import reduce_frequency
  
  
  
@@ -238,6 +238,7 @@ def plot_SCM(path):
     st.plotly_chart(fig2)
     # fig1.show()
     # fig2.show()
+    return fig1, fig2
  
  
  
@@ -372,9 +373,9 @@ def scmplot(file_path):
     if not file_path:
         return
     try:
-        f = xr.open_zarr(path)
+        f = xr.open_zarr(file_path)
     except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
+        f = xr.open_dataset(file_path, engine = 'h5netcdf', phony_dims = 'sort')
     latitude = f['MAG_LAT'][...]
     longitude = f['MAG_LON'][...]
     X_Waveform = f['A231_W'][...]
