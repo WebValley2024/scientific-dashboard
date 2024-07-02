@@ -25,6 +25,8 @@ from plotting.functions.plot_LAP import lap_plot
 from plotting.functions.plot_HEPPX import heppx_plot
 from plotting.functions.plot_SCM import scmplot
 from plotting.functions.plot_HEPPH import plotheph
+from plotting.functions.plot_HEPPD import plot_HEPD
+# from plotting.functions.plot_HEPPD import 
 
 folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/EFD'
 
@@ -92,7 +94,7 @@ def search_files(st_map, start_date, end_date):
 
 def plotting_selector(intersection_files, coordinates):
     dataset_type = extract_dataset_type(intersection_files)
-    option = st.multiselect("Instrument Type", (" ", "EFD", "SCM", "LAP", "HEP_1", "HEP_4", "HEP_2"))
+    option = st.multiselect("Instrument Type", (" ", "EFD", "SCM", "LAP", "HEP_1", "HEP_4", "HEP_2", "HEP_3"))
     if st.button("plot"):
         if option:
             for dataset in dataset_type:
@@ -112,6 +114,10 @@ def plotting_selector(intersection_files, coordinates):
                     elif dataset_type == 'HEP_2' == sensors:
                         st.write("test")
                         plotheph(file_path)
+                    elif dataset_type == 'HEP_3' == sensors:
+                        st.write("test")
+                        plot_HEPD(file_path)
+
     min_lat, max_lat = calculate_extremes(coordinates)
     st.write(f"Leftmost Latitude: {min_lat:.6f}")
     st.write(f"Rightmost Latitude: {max_lat:.6f}")
