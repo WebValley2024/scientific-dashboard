@@ -814,6 +814,8 @@ def plot_proton_pitch_utc(path):
     st.plotly_chart(fig)
 
 def plotheph(file_path):
+    if not file_path:
+        return
     plot_proton_electron_count_verse_time(file_path)
     plot_proton_electron_count_utc(file_path)
     plot_on_map_electron_count(file_path)

@@ -240,6 +240,8 @@ def plot_X_energy_spectrum_utc(path):
 
 
 def heppx_plot(f_path):
+    if not f_path:
+        return
     col1, col2 = st.columns(2)
     with col1:
         st.plotly_chart(plot_xray_count_verse_time(f_path))

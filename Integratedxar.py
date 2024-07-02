@@ -28,7 +28,7 @@ from plotting.functions.plot_HEPPH import plotheph
 from plotting.functions.plot_HEPPD import plot_HEPD
 # from plotting.functions.plot_HEPPD import 
 
-folder_path = '/home/wvuser/cses_personal_data'
+folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/EFD/'
 
 def dataset(path):
     try:
@@ -202,7 +202,7 @@ def extract_dataset_type(file_paths):
             raise ValueError(f"Unknown dataset type in file name: {file_name}")
     return dataset_types
 
-def file_selector(folder_path='/home/wvuser/cses_personal_data'):
+def file_selector(folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/EFD/'):
     filenames = os.listdir(folder_path)
     file_paths = [os.path.join(folder_path, filename) for filename in filenames if os.path.isfile(os.path.join(folder_path, filename))]
     return file_paths

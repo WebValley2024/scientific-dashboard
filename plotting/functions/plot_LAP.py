@@ -267,6 +267,9 @@ def plot_on_map_temperature(fig, path):
 
 
 def lap_plot(f_path):
+    if not f_path:
+        return
+
     # Create a 2x2 grid for plotting
     columns = st.columns(2)
     

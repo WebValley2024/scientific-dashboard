@@ -11,7 +11,8 @@ import plotly.io as pio
 import geopandas as gpd
  
 def plot_proton_electron_count_utc(path):
- 
+    if not path:
+        return
     f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
  
     time = f.UTCTime

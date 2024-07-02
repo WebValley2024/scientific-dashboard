@@ -128,6 +128,7 @@ from plotting.functions.reducefreq import reduce_frequency
  
  
 def plot_SCM(path):
+
     try:
         f = xr.open_zarr(path)
     except:
@@ -368,6 +369,8 @@ def plot_SCM_on_map(data, latitude, longitude):
  
  
 def scmplot(file_path):
+    if not file_path:
+        return
     try:
         f = xr.open_zarr(path)
     except:
