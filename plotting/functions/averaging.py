@@ -7,10 +7,6 @@ from plotly.subplots import make_subplots
 
 
 
-
-
-
-
 """
 gets a list of the files to analyse and the sensor it should analyse as a string. returns as a list:
 [median, quantile 25, quantile 75] of the sensor that was selected
@@ -87,3 +83,34 @@ def plot_med_quantile(stats):
 
     return fig
 
+
+"""
+takes as input the stats (output of get_med_quantile()) and the figure the stats should get plottet in.
+returns the figure with the summarized data as a trace included
+"""
+def add_stats_trace(stats, fig):
+    median_array = stats[0]
+    quartile_25 = stats[1]
+    quartile_75 = stats[2]
+    x_values = fig.data[0].x
+    # Add trace for median
+    fig.add_trace(go.Scatter(y=median_array,x=x_values,
+                                mode='lines',
+                                name='Median'))
+
+    # Add trace for quartiles
+    fig.add_trace(go.Scatter(y=quartile_25, x=x_values,
+                                mode='lines',
+                                line=dict(width=0),
+                                fillcolor='rgba(0,100,80,0.2)',
+                                fill='tonexty',
+                                name='25th Percentile (1st Quartile)'))
+
+    fig.add_trace(go.Scatter(y=quartile_75, x=x_values,
+                                mode='lines',
+                                line=dict(width=0),
+                                fillcolor='rgba(0,100,80,0.2)',
+                                fill='tonexty',
+                                name='75th Percentile (3rd Quartile)'))
+    return fig
+    
