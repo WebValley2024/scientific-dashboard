@@ -813,3 +813,50 @@ def plot_proton_pitch_verse(path):
         yaxis_title = "Pitch (degree)",
     ))
     fig.show()
+
+
+def aggregated_HEPPL_electron_proton(files, count_type='electron'):
+ 
+    fig = go.Figure()
+ 
+    for file in files:
+        f = xr.open_zarr(file)
+ 
+        # Extract the required variables
+        latitude = f['GEO_LAT'][...]
+ 
+        if count_type == 'electron':
+            try:
+                count_data = f['Count_electron'][...]
+            except:
+                count_data = f['Count_Electron'][...]
+        else:
+            try:
+                count_data = f['Count_proton'][...]
+            except:
+                count_data = f['Count_Proton'][...]
+ 
+        # Flatten the data for plotting
+        latitude = latitude.values.flatten()
+        count_data = count_data.values.flatten()
+ 
+        # Plot the data
+        fig.add_trace(
+            go.Scatter(x=latitude, y=count_data, mode='lines', name=file)
+        )
+ 
+    # Configure the layout
+    if count_type == 'electron':
+        y_axis_title = "Electron Count"
+    else:
+        y_axis_title = "Proton Count"
+ 
+    fig.update_layout(
+        title=f"{y_axis_title} vs GEO_LAT",
+        xaxis_title="GEO_LAT",
+        yaxis_title=y_axis_title,
+        template="plotly_white"
+    )
+ 
+    return fig
+ 
