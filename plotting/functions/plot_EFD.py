@@ -12,7 +12,7 @@ import pandas as pd
 import os
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
-from .reducefreq import reduce_frequency
+from reducefreq import reduce_frequency
 
 import geopandas as gpd
 import pandas as pd
@@ -24,6 +24,9 @@ import matplotlib.colors as colors
 from shapely import geometry
 from glob import glob
 import datetime
+
+
+
 
 def plot_EFD(path):
     f = xr.open_zarr(path)

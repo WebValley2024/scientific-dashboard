@@ -54,6 +54,7 @@ coverage.xml
 .pytest_cache/
 cover/
 
+
 # Translations
 *.mo
 *.pot
@@ -81,6 +82,7 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 .h5
+.png
 
 # IPython
 profile_default/
