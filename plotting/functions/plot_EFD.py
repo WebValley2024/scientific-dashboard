@@ -12,7 +12,7 @@ import pandas as pd
 import os
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
-from reducefreq import reduce_frequency
+from plotting.functions.reducefreq import reduce_frequency
 
 import geopandas as gpd
 import pandas as pd

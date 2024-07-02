@@ -4,13 +4,8 @@ import plotly.graph_objects as go
 import xarray as xr
 import pandas as pd
 import numpy as np
-from plot_SCM import plot_SCM
-
-paths = [
-    "/home/wvuser/cses_personal_data/CSES_01_EFD_1_L02_A1_213330_20211206_164953_20211206_172707_000.h5",
-    "/home/wvuser/webvalley2024/Small_samples/CSES_01_EFD_1_L02_A1_104240_20191219_235348_20191220_002832_000.h5",
-    "/home/wvuser/webvalley2024/Small_samples/CSES_01_EFD_1_L02_A1_104241_20191220_004117_20191220_011551_000.h5"
-]
+from plotting.functions.plot_SCM import plot_SCM
+from plotting.functions.reducefreq import reduce_frequency
 
 def plot_sequential_SCM(paths):
     # Initialize empty lists to store figures
@@ -51,5 +46,5 @@ def plot_sequential_SCM(paths):
     st.plotly_chart(fig_combined)
     st.plotly_chart(fig_combined2)
 
-plot_sequential_SCM(paths)
+# plot_sequential_SCM(paths)
 
