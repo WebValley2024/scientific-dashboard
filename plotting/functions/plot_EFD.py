@@ -204,3 +204,110 @@ def plot_EFD(path):
     with col2:
         st.plotly_chart(fig2)
     return fig1, fig2
+
+def aggregate_EFD_angles(files, angle_type='polar'):
+
+    fig = go.Figure()
+ 
+    for file in files:
+        try:
+            f = xr.open_zarr(file)
+        except:
+            f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+ 
+        # Extract the required variables
+        latitude = f['GEO_LAT'][...]
+        X_Waveform = f['A111_W'][...]
+        Y_Waveform = f['A112_W'][...]
+        Z_Waveform = f['A113_W'][...]
+ 
+        # Compute magnitude and angles
+        magnitude = np.sqrt(X_Waveform**2 + Y_Waveform**2 + Z_Waveform**2)
+        polar_angle = np.degrees(np.arccos(Z_Waveform / magnitude))  # theta
+        azimuthal_angle = np.degrees(np.arctan2(Y_Waveform, X_Waveform))  # phi
+ 
+        # Select the angle to plot
+        if angle_type == 'polar':
+            angle = polar_angle
+        elif angle_type == 'azimuth':
+            angle = azimuthal_angle
+        else:
+            raise ValueError("Invalid angle type. Choose 'polar' or 'azimuth'.")
+ 
+        # Reduce the frequency of the data
+        latitude = reduce_frequency(latitude, 1)
+        angle = reduce_frequency(angle, 1)
+ 
+        # Flatten the data for plotting
+        latitude = latitude.values.flatten()
+        angle = angle.values.flatten()
+ 
+        # Plot the data
+        fig.add_trace(
+            go.Scatter(x=latitude, y=angle, mode='lines', name=file)
+        )
+ 
+    # Configure the layout
+    if angle_type == 'polar':
+        y_axis_title = "Polar Angle (degrees)"
+    else:
+        y_axis_title = "Azimuthal Angle (degrees)"
+ 
+    fig.update_layout(
+        title=f"{y_axis_title} vs GEO_LAT",
+        xaxis_title="GEO_LAT",
+        yaxis_title=y_axis_title,
+        template="plotly_white"
+    )
+ 
+    return fig
+
+def aggregate_EFD_waveform(files, waveform_type='X'):
+    fig = go.Figure()
+ 
+    for file in files:
+        try:
+            f = xr.open_zarr(file)
+        except:
+            f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+ 
+        # Extract the required variables
+        latitude = f['GEO_LAT'][...]
+ 
+        if waveform_type == 'X':
+            waveform = f['A111_W'][...]
+        elif waveform_type == 'Y':
+            waveform = f['A112_W'][...]
+        elif waveform_type == 'Z':
+            waveform = f['A113_W'][...]
+        elif waveform_type == 'vector':
+            X_Waveform = f['A111_W'][...]
+            Y_Waveform = f['A112_W'][...]
+            Z_Waveform = f['A113_W'][...]
+            waveform = np.sqrt(X_Waveform**2 + Y_Waveform**2 + Z_Waveform**2)
+        else:
+            raise ValueError("Invalid waveform type. Choose 'X', 'Y', 'Z', or 'vector'.")
+ 
+        # Reduce the frequency of the data
+        waveform = reduce_frequency(waveform, 1)
+ 
+        # Flatten the data for plotting
+        latitude = latitude.values.flatten()
+        waveform = waveform.values.flatten()
+ 
+        # Plot the data
+        fig.add_trace(
+            go.Scatter(x=latitude, y=waveform, mode='lines', name=file)
+        )
+ 
+    # Configure the layout
+    y_axis_title = f"{waveform_type} Waveform" if waveform_type != 'vector' else "Vector Magnitude"
+ 
+    fig.update_layout(
+        title=f"{y_axis_title} vs GEO_LAT",
+        xaxis_title="GEO_LAT",
+        yaxis_title=y_axis_title,
+        template="plotly_white"
+    )
+ 
+    return fig
