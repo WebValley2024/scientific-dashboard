@@ -3,7 +3,7 @@ import streamlit as st
 from streamlit_folium import st_folium
 import folium
 from folium.plugins import Draw
-import numpy as nps
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import skew, kurtosis, t
@@ -12,10 +12,7 @@ import pandas as pd
 import os
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
-
-# from reduce_frequency_test import reduce_frequency
-# from reduce_frequency_test import reduce_frequency
-from plotting.functions.reducefreq import reduce_frequency
+from .reducefreq import reduce_frequency
 
 import geopandas as gpd
 import pandas as pd
@@ -28,13 +25,8 @@ from shapely import geometry
 from glob import glob
 import datetime
 
-
 def plot_EFD(path):
-    try:
-        f = xr.open_zarr(path)
-    except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
-
+    f = xr.open_zarr(path)
     X_Waveform = f['A111_W'][...]
     Y_Waveform = f['A112_W'][...]
     Z_Waveform = f['A113_W'][...]
@@ -52,8 +44,6 @@ def plot_EFD(path):
     # Convert angles to degrees
     polar_angle = np.degrees(polar_angle)
     azimuthal_angle = np.degrees(azimuthal_angle)
-    UTC_TIMEstr = f['UTC_TIME'][...].values.tolist()
-    # UTC_TIMEstr= f['UTC_TIME'][...]
  
     reduced_freq = 100  # Specify the desired frequency here
     X_Waveform = reduce_frequency(X_Waveform, reduced_freq)
