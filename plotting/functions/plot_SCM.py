@@ -8,7 +8,7 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from plotting.functions.reducefreq import reduce_frequency
+from reducefreq import reduce_frequency
  
  
  
@@ -128,6 +128,7 @@ from plotting.functions.reducefreq import reduce_frequency
  
  
 def plot_SCM(path):
+
     try:
         f = xr.open_zarr(path)
     except:
@@ -237,6 +238,7 @@ def plot_SCM(path):
     st.plotly_chart(fig2)
     # fig1.show()
     # fig2.show()
+    return fig1, fig2
  
  
  
@@ -368,10 +370,12 @@ def plot_SCM_on_map(data, latitude, longitude):
  
  
 def scmplot(file_path):
+    if not file_path:
+        return
     try:
-        f = xr.open_zarr(path)
+        f = xr.open_zarr(file_path)
     except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
+        f = xr.open_dataset(file_path, engine = 'h5netcdf', phony_dims = 'sort')
     latitude = f['MAG_LAT'][...]
     longitude = f['MAG_LON'][...]
     X_Waveform = f['A231_W'][...]
@@ -385,3 +389,109 @@ def scmplot(file_path):
     plot_SCM(file_path)
     # plot_EFD_on_map(file_path)
  
+
+ # input a list of file paths and component.
+# component options:
+# 'A231_W' for "X Waveform"
+# 'A232_W' for "Y Waveform"
+# 'A233_W' for "Z Waveform"
+ 
+def aggregated_SCM_waveform(files, component='A231_W'):
+    fig = go.Figure()
+ 
+    for file in files:
+        try:
+            f = xr.open_zarr(file)
+        except:
+            f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+ 
+        # Extract the required variables
+        latitude = f['GEO_LAT'][...]
+        waveform = f[component][...]
+ 
+        # Reduce the frequency of the data
+        waveform = reduce_frequency(waveform, 1)
+ 
+        # Flatten the data for plotting
+        waveform = waveform.values.flatten()
+        lat = latitude.values.flatten()
+ 
+        # Plot the data
+        fig.add_trace(
+            go.Scatter(x=lat, y=waveform, mode='lines', name=file)
+        )
+ 
+    # Configure the layout
+    if component == 'A231_W':
+        y_axis_title = "X Waveform"
+    elif component == 'A232_W':
+        y_axis_title = "Y Waveform"
+    elif component == 'A233_W':
+        y_axis_title = "Z Waveform"
+    else:
+        y_axis_title = "Waveform"
+ 
+    fig.update_layout(
+        title=f"{y_axis_title} vs GEO_LAT",
+        xaxis_title="GEO_LAT",
+        yaxis_title=y_axis_title,
+        template="plotly_white"
+    )
+ 
+    return fig
+
+
+def aggregated_SCM_angles(files, angle_type='polar'):
+    fig = go.Figure()
+ 
+    for file in files:
+        try:
+            f = xr.open_zarr(file)
+        except:
+            f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+ 
+        # Extract the required variables
+        latitude = f['GEO_LAT'][...]
+        X_Waveform = f['A231_W'][...]
+        Y_Waveform = f['A232_W'][...]
+        Z_Waveform = f['A233_W'][...]
+ 
+        # Compute magnitude and angles
+        magnitude = np.sqrt(X_Waveform**2 + Y_Waveform**2 + Z_Waveform**2)
+        polar_angle = np.arccos(Z_Waveform / magnitude)  # theta
+        azimuthal_angle = np.arctan2(Y_Waveform, X_Waveform)  # phi
+ 
+        # Convert angles to degrees
+        polar_angle = np.degrees(polar_angle)
+        azimuthal_angle = np.degrees(azimuthal_angle)
+ 
+        # Reduce the frequency of the data
+        latitude = reduce_frequency(latitude, 1)
+        if angle_type == 'polar':
+            angle = reduce_frequency(polar_angle, 1)
+        else:
+            angle = reduce_frequency(azimuthal_angle, 1)
+ 
+        # Flatten the data for plotting
+        latitude = latitude.values.flatten()
+        angle = angle.values.flatten()
+ 
+        # Plot the data
+        fig.add_trace(
+            go.Scatter(x=latitude, y=angle, mode='lines', name=file)
+        )
+ 
+    # Configure the layout
+    if angle_type == 'polar':
+        y_axis_title = "Polar Angle (degrees)"
+    else:
+        y_axis_title = "Azimuthal Angle (degrees)"
+ 
+    fig.update_layout(
+        title=f"{y_axis_title} vs GEO_LAT",
+        xaxis_title="GEO_LAT",
+        yaxis_title=y_axis_title,
+        template="plotly_white"
+    )
+ 
+    return fig

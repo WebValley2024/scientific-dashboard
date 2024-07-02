@@ -1,19 +1,19 @@
-
+import streamlit as st
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from functions.reduce_frequency_test import reduce_frequency
+from .reducefreq import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio
 import geopandas as gpd
  
-path = "/home/wvuser/CSES_HEP_DDD_0219741_20220117_214156_20220117_230638_L3_0000267631.h5"
 def plot_proton_electron_count_utc(path):
- 
-    f = xr.open_dataset(path, phony_dims='sort')
+    if not path:
+        return
+    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
  
     time = f.UTCTime
     try:
@@ -84,12 +84,11 @@ def plot_proton_electron_count_utc(path):
         height=600
     )
  
-    fig.show()
-plot_proton_electron_count_utc(path)
+    st.plotly_chart(fig)
  
 
 def plot_electron_energy_utc(path):
-    f = xr.open_dataset(path, phony_dims='sort')
+    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
     verse_time = f.UTCTime
     data = f.HEPD_ele_energy_pitch
     data = np.sum(data, axis=2)
@@ -144,14 +143,13 @@ def plot_electron_energy_utc(path):
         yaxis_title=f"{f.HEPD_ele_energy_table.Units}",
         yaxis=dict(type='log', title='Electron Energy (MeV)')
     )
-    fig.show()
-plot_electron_energy_utc(path)
+    st.plotly_chart(fig)
 #f = xr.open_dataset(path, phony_dims='sort')
 #f
  
 
 def plot_proton_energy_utc(path):
-    f = xr.open_dataset(path, phony_dims='sort')
+    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
     verse_time = f.UTCTime
     data = f.HEPD_pro_energy_pitch
     data = np.sum(data, axis=2)
@@ -206,12 +204,10 @@ def plot_proton_energy_utc(path):
         yaxis_title=f"{f.HEPD_pro_energy_table.Units}",
         yaxis=dict(type='log', title='Electron Energy (MeV)')
     )
-    fig.show()
-plot_proton_energy_utc(path)
+    st.plotly_chart(fig)
 #f = xr.open_dataset(path, phony_dims='sort')
  
 
-path = "/home/wvuser/CSES_HEP_DDD_0245420_20220705_194928_20220705_202650_L3_0000292882.zarr.zip"
 def plot_electrons_counts_on_map(path):
     f = xr.open_zarr(path)
     data = f.HEPD_ele_counts
@@ -303,16 +299,14 @@ def plot_electrons_counts_on_map(path):
         margin={"r":0,"t":30,"l":0,"b":0},
         showlegend=False
     )
-    fig.show()
+    st.plotly_chart(fig)
  
 #f = xr.open_dataset(path, phony_dims='sort')
 #LonLat= f.LonLat
-plot_electrons_counts_on_map(path)
 #f = xr.open_zarr(path)
 #f
  
 
-path = "/home/wvuser/CSES_HEP_DDD_0245420_20220705_194928_20220705_202650_L3_0000292882.zarr.zip"
 def plot_protons_counts_on_map(path):
     f = xr.open_zarr(path)
     data = f.HEPD_pro_counts
@@ -404,11 +398,15 @@ def plot_protons_counts_on_map(path):
         margin={"r":0,"t":30,"l":0,"b":0},
         showlegend=False
     )
-    fig.show()
+    st.plotly_chart(fig)
  
 #f = xr.open_dataset(path, phony_dims='sort')
 #LonLat= f.LonLat
-plot_protons_counts_on_map(path)
 #f = xr.open_zarr(path)
 #f
- 
+def plot_HEPD(file_path):
+    plot_proton_electron_count_utc(file_path)
+    plot_electron_energy_utc(file_path)
+    plot_proton_energy_utc(file_path)
+    plot_electrons_counts_on_map(file_path)
+    plot_protons_counts_on_map(file_path)

@@ -267,6 +267,9 @@ def plot_on_map_temperature(fig, path):
 
 
 def lap_plot(f_path):
+    if not f_path:
+        return
+
     # Create a 2x2 grid for plotting
     columns = st.columns(2)
     
@@ -291,3 +294,43 @@ def lap_plot(f_path):
         fig4 = go.Figure()
         plot_on_map_temperature(fig4, f_path)
         st.plotly_chart(fig4)
+
+
+# input a list of file paths
+ 
+def aggregated_LAP_electron(files, variable='A311'):
+    fig = go.Figure()
+ 
+    for file in files:
+        f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+ 
+        # Extract the required variables
+        latitude = f['GEO_LAT'][...]
+        data = f[variable][...]
+ 
+        # Reduce the frequency of the data
+        data = reduce_frequency(data, 1)
+ 
+        # Flatten the data for plotting
+        measure = data.values.flatten()
+        lat = latitude.values.flatten()
+ 
+        # Plot the data
+        fig.add_trace(
+            go.Scatter(x=lat, y=measure, mode='lines', name=file)
+        )
+ 
+    # Configure the layout
+    if variable == 'A311':
+        y_axis_title = "Electron Density (1/m^3)"
+    else:
+        y_axis_title = "Electron Temperature (K)"
+ 
+    fig.update_layout(
+        title=f"{variable} vs GEO_LAT",
+        xaxis_title="GEO_LAT",
+        yaxis_title=y_axis_title,
+        template="plotly_white"
+    )
+ 
+    return fig
