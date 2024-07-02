@@ -29,7 +29,11 @@ import datetime
 
 
 def plot_EFD(path):
-    f = xr.open_zarr(path)
+    
+    try:
+        f = xr.open_zarr(path)
+    except:
+        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
     X_Waveform = f['A111_W'][...]
     Y_Waveform = f['A112_W'][...]
     Z_Waveform = f['A113_W'][...]
