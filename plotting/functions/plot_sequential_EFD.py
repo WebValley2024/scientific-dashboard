@@ -27,20 +27,28 @@ def plot_sequential_EFD(paths):
             st.error(f"Error processing {path}: {str(e)}")
     
     # Concatenate fig1 and fig2 along the x-axis
-    fig_combined = make_subplots(rows=1, cols=2, shared_xaxes=True, vertical_spacing=0.1)
-    
+    fig_combined = make_subplots(rows=1, cols=1, shared_xaxes=True, vertical_spacing=0.1)
+    fig_combined2 = make_subplots(rows=1, cols=1, shared_xaxes=True, vertical_spacing=0.1)
     for fig1 in all_fig1:
         for trace in fig1.data:
             fig_combined.add_trace(trace, row=1, col=1)
-    '''
+    
     for fig2 in all_fig2:
         for trace in fig2.data:
-            fig_combined.add_trace(trace, row=2, col=1)
-    '''
+            fig_combined2.add_trace(trace, row=1, col=1)
+    
     # Update layout
     fig_combined.update_layout(height=600, title_text="Combined EFD Plots")
-    
+    fig_combined.update_traces(selector=dict(name='X Waveform'), marker=dict(color='red'))
+    fig_combined.update_traces(selector=dict(name='Y Waveform'), marker=dict(color='orange'))
+    fig_combined.update_traces(selector=dict(name='Z Waveform'), marker=dict(color='green'))
+
+
+
+    fig_combined2.update_layout(height=600, title_text="Combined EFD Plots")
+    fig_combined2.update_traces(selector=dict(name='Polar Angle'), marker=dict(color='green'))
     # Plot using Streamlit
-    fig_combined.show()
+    st.plotly_chart(fig_combined)
+    st.plotly_chart(fig_combined2)
 
 plot_sequential_EFD(paths)
