@@ -3,10 +3,11 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from functions.reduce_frequency_test import reduce_frequency
+from plotting.functions.reducefreq import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio
+import streamlit as st
 
 
 #all these methods take path to a zarr-File!!
@@ -72,7 +73,7 @@ def plot_proton_electron_count_verse_time(path):
         width=800,
         height=600,
     )
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_proton_electron_count_utc(path):
 
@@ -150,7 +151,7 @@ def plot_proton_electron_count_utc(path):
         height=600
     )
 
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_on_map_electron_count(path):
     try:
@@ -227,7 +228,7 @@ def plot_on_map_electron_count(path):
     )
     fig.update_layout(title = "Electron Counts", template="plotly_white")
 
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_on_map_proton_count(path):
     try:
@@ -304,7 +305,7 @@ def plot_on_map_proton_count(path):
     )
     fig.update_layout(title = "Proton Counts", template="plotly_white")
 
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_electron_energy_verse(path):
     try:
@@ -364,7 +365,7 @@ def plot_electron_energy_verse(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_electron_energy_utc(path):
     try:
@@ -430,7 +431,7 @@ def plot_electron_energy_utc(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_electron_pitch_verse(path):
     try:
@@ -490,7 +491,7 @@ def plot_electron_pitch_verse(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_electron_pitch_utc(path):
     try:
@@ -556,7 +557,7 @@ def plot_electron_pitch_utc(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 def plot_proton_energy_verse(path):
     try:
         f = xr.open_zarr(path)
@@ -615,7 +616,7 @@ def plot_proton_energy_verse(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_proton_energy_utc(path):
     try:
@@ -681,7 +682,7 @@ def plot_proton_energy_utc(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_proton_pitch_verse(path):
     try:
@@ -742,7 +743,7 @@ def plot_proton_pitch_verse(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_proton_pitch_utc(path):
     try:
@@ -810,4 +811,18 @@ def plot_proton_pitch_utc(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
+
+def plotheph(file_path):
+    plot_proton_electron_count_verse_time(file_path)
+    plot_proton_electron_count_utc(file_path)
+    plot_on_map_electron_count(file_path)
+    plot_on_map_proton_count(file_path)
+    plot_electron_energy_verse(file_path)
+    plot_electron_energy_utc(file_path)
+    plot_electron_pitch_verse(file_path)
+    plot_electron_pitch_utc(file_path)
+    plot_proton_energy_verse(file_path)
+    plot_proton_energy_utc(file_path)
+    plot_proton_pitch_verse(file_path)
+    plot_proton_pitch_utc(file_path)

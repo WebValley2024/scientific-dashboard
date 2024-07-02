@@ -8,7 +8,7 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from functions.reduce_frequency_test import reduce_frequency
+from plotting.functions.reducefreq import reduce_frequency
  
  
  
