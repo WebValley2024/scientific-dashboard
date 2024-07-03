@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from reducefreq import reduce_frequency
+from plotting.functions.reducefreq import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio

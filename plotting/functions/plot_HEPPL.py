@@ -14,7 +14,7 @@ from plotting.functions.reducefreq import reduce_frequency
 #all these methods take path to a zarr-File!!
 #TODO: both plot-against-time-methods do seperate scales for protons and electrons. 
 # do we want it that way??
-def plot_proton_electron_count_verse_time(path):
+def plot_proton_electron_count_verse_time(path, multiple):
     f = xr.open_zarr(path)
     verse_time = f.VERSE_TIME
     try:
@@ -70,7 +70,8 @@ def plot_proton_electron_count_verse_time(path):
         width=800,
         height=600,
     )
-    st.plotly_chart(fig)
+    if(not multiple):
+        st.plotly_chart(fig)
     return fig
 
 def plot_proton_electron_count_utc(path):
@@ -865,7 +866,7 @@ def aggregated_HEPPL_electron_proton(files, count_type='electron'):
  
 
 def plot_hepl(path):
-    plot_proton_electron_count_verse_time(path)
+    plot_proton_electron_count_verse_time(path, False)
     plot_proton_electron_count_utc(path)
     plot_on_map_electron_count(path)
     plot_on_map_proton_count(path)
