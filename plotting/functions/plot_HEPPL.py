@@ -3,10 +3,11 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from reducefreq import reduce_frequency
+# from reducefreq import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio
+import streamlit as st
 from plotting.functions.reducefreq import reduce_frequency
 
 
@@ -69,7 +70,8 @@ def plot_proton_electron_count_verse_time(path):
         width=800,
         height=600,
     )
-    fig.show()
+    st.plotly_chart(fig)
+    return fig
 
 def plot_proton_electron_count_utc(path):
 
@@ -143,7 +145,7 @@ def plot_proton_electron_count_utc(path):
         height=600
     )
 
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_on_map_electron_count(path):
     f = xr.open_zarr(path)
@@ -216,7 +218,7 @@ def plot_on_map_electron_count(path):
     )
     fig.update_layout(title = "Electron Counts", template="plotly_white")
 
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_on_map_proton_count(path):
     f = xr.open_zarr(path)
@@ -289,7 +291,7 @@ def plot_on_map_proton_count(path):
     )
     fig.update_layout(title = "Proton Counts", template="plotly_white")
 
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_electron_energy_verse(path):
     f = xr.open_zarr(path)
@@ -345,7 +347,7 @@ def plot_electron_energy_verse(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_electron_energy_utc(path):
     f = xr.open_zarr(path)
@@ -407,7 +409,7 @@ def plot_electron_energy_utc(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_electron_pitch_verse(path):
     f = xr.open_zarr(path)
@@ -554,7 +556,7 @@ def plot_electron_pitch_verse(path):
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Pitch (degree)",
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 
 def plot_proton_energy_verse(path):
@@ -607,7 +609,7 @@ def plot_proton_energy_verse(path):
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Energy (KeV)",
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_proton_energy_utc(path):
     f = xr.open_zarr(path)
@@ -665,7 +667,7 @@ def plot_proton_energy_utc(path):
         xaxis_title = "UTC Time",
         yaxis_title = "Energy (KeV) CHECK UNIT!",
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 
 def plot_proton_pitch_verse(path):
@@ -813,7 +815,7 @@ def plot_proton_pitch_verse(path):
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Pitch (degree)",
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 
 def aggregated_HEPPL_electron_proton(files, count_type='electron'):
