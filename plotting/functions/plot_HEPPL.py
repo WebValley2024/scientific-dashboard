@@ -7,6 +7,7 @@ from reducefreq import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio
+from plotting.functions.reducefreq import reduce_frequency
 
 
 #all these methods take path to a zarr-File!!

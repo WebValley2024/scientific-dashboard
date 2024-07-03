@@ -127,7 +127,7 @@ from plotting.functions.reducefreq import reduce_frequency
  
  
  
-def plot_SCM(path):
+def plot_SCM(path, multiple):
 
     try:
         f = xr.open_zarr(path)
@@ -230,12 +230,14 @@ def plot_SCM(path):
             yaxis_title="Frequency (Hz)",
             legend=dict(x=1, y=0.5)
         )
-        st.plotly_chart(fig)
+        if(not multiple):
+            st.plotly_chart(fig)
         # fig.show()
  
     # Display the first two figures
-    st.plotly_chart(fig1)
-    st.plotly_chart(fig2)
+    if(not multiple):
+        st.plotly_chart(fig1)
+        st.plotly_chart(fig2)
     # fig1.show()
     # fig2.show()
     return fig1, fig2

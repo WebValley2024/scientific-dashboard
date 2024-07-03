@@ -28,7 +28,7 @@ import datetime
 
 
 
-def plot_EFD(path):
+def plot_EFD(path, multiple):
     
     try:
         f = xr.open_zarr(path)
@@ -171,7 +171,8 @@ def plot_EFD(path):
                     yaxis_title="Frequency (Hz)",
                     legend=dict(x=1, y=0.5)
                 )
-                st.plotly_chart(fig)
+                if(not multiple):
+                    st.plotly_chart(fig)
 
     # Display the third graph in a new row, centered
     if len(power_spectra) > 2:
@@ -193,17 +194,23 @@ def plot_EFD(path):
                 yaxis_title="Frequency (Hz)",
                 legend=dict(x=1, y=0.5)
             )
-            st.plotly_chart(fig)
+            if(not multiple):
+                st.plotly_chart(fig)
+
 
     # Display the first two figures
     col1, col2 = st.columns(2)
-
+    if(multiple):
+        st.write("multiple")
+        return fig1, fig2
+    
+    st.write("single file")
     with col1:
         st.plotly_chart(fig1)
 
     with col2:
         st.plotly_chart(fig2)
-    return fig1, fig2
+
 
 def aggregate_EFD_angles(files, angle_type='polar'):
 
