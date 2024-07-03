@@ -451,7 +451,7 @@ def aggregate_HEPPD_electron_proton(files, count_type='electron'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
 
 def plot_HEPD(file_path):
     plot_proton_electron_count_utc(file_path)
