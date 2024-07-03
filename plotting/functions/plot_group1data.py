@@ -5,7 +5,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import re
 # Make a GET request to the specified URL
-kind="earthquake"
 
 def parse_flux(flux_str):
     match = re.search(r"([a-zA-Z])(\d+\.\d+)", flux_str)
@@ -41,9 +40,9 @@ def get_catalogue_data(kind, start_date: str, stop_date: str):
 
 # with open("earthquake_data.json", "r") as file:
 #     data = json.load(file)
-data = get_catalogue_data(kind, "2024-03-25", "2024-03-26")
 
-if kind=="earthquake":
+
+def plot_earthquake_data(data):
     # Extract relevant fields
     trigger_times = []
     magnitudes = []
@@ -95,10 +94,10 @@ if kind=="earthquake":
     )
 
     # Show the plot
-    fig.show()
+    return fig
 
 
-elif kind=="grb":
+def plot_grb_data(data):
     trigger_times = []
     sigmas = []
     sources = []
@@ -167,10 +166,10 @@ elif kind=="grb":
     )
 
     # Show the plot
-    fig.show()
+    return fig
 
 
-elif kind=="tgf":
+def plot_tgf_data(data):
     trigger_times = []
     sources = []
 
@@ -230,9 +229,9 @@ elif kind=="tgf":
     )
 
     # Show the plot
-    fig.show()
+    return fig
 
-elif kind=="swe":
+def plot_swe_data(data):
     trigger_times = []
     fluxes = []
     flux_letters = []
@@ -305,9 +304,9 @@ elif kind=="swe":
     )
 
     # Show the plot
-    fig.show()
+    return fig
 
-if kind=="gms":
+def plot_gms_data(data):
     trigger_times = []
     speeds = []
 
@@ -355,4 +354,18 @@ if kind=="gms":
     )
 
     # Show the plot
-    fig.show()
+    return fig
+
+def plot_group1_data(kind, start_date, end_date):
+    data = get_catalogue_data(kind, start_date, end_date)
+    if kind=="earthquake":
+        plot_earthquake_data(data)
+    elif kind=="grb":
+        plot_grb_data(data)
+    elif kind=="gms":
+        plot_gms_data(data)
+    elif kind=="tgf":
+        plot_tgf_data(data)
+    elif kind=="swe":
+        plot_swe_data(data)
+
