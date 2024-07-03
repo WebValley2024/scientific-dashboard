@@ -302,7 +302,7 @@ def aggregated_LAP_electron(files, variable='A311'):
     fig = go.Figure()
  
     for file in files:
-        f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+        f = xr.open_zarr(file)
  
         # Extract the required variables
         latitude = f['GEO_LAT'][...]
@@ -314,10 +314,10 @@ def aggregated_LAP_electron(files, variable='A311'):
         # Flatten the data for plotting
         measure = data.values.flatten()
         lat = latitude.values.flatten()
- 
+
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=lat, y=measure, mode='lines', name=file)
+            go.Scatter(x=lat, y=measure, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -333,4 +333,14 @@ def aggregated_LAP_electron(files, variable='A311'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number

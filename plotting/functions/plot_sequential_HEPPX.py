@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import xarray as xr
 import pandas as pd
 import numpy as np
-from plot_HEPPX import plot_xray_count_utc_time 
+from plotting.functions.plot_HEPPX import plot_xray_count_utc_time 
 from plotting.functions.reducefreq import reduce_frequency
 
 def plot_sequential_HEPPX(paths):
@@ -32,11 +32,7 @@ def plot_sequential_HEPPX(paths):
     fig_combined.update_layout(height=600, title_text="Combined Xray Count")
     fig_combined.update_traces(selector=dict(name='Xray Count'), marker=dict(color='red'))
 
-
-
-
     # Plot using Streamlit
     st.plotly_chart(fig_combined)
 
 
-plot_sequential_HEPPX(paths)

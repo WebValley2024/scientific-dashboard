@@ -243,7 +243,7 @@ def plot_electrons_counts_on_map(path):
     fig = go.Figure()
  
     # Load world map using geopandas
-    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+    world = gpd.read_file('webappfiles/maps/ne_110m_admin_0_countries.shp')
  
     # Plot world map as background
     fig.add_trace(go.Choropleth(
@@ -340,9 +340,9 @@ def plot_protons_counts_on_map(path):
  
     # Create a scatter plot on a map using Plotly
     fig = go.Figure()
- 
+
     # Load world map using geopandas
-    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+    world = gpd.read_file('webappfiles/maps/ne_110m_admin_0_countries.shp')
  
     # Plot world map as background
     fig.add_trace(go.Choropleth(

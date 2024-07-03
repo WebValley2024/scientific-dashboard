@@ -846,7 +846,7 @@ def aggregated_HEPPL_electron_proton(files, count_type='electron'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=latitude, y=count_data, mode='lines', name=file)
+            go.Scatter(x=latitude, y=count_data, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -862,7 +862,7 @@ def aggregated_HEPPL_electron_proton(files, count_type='electron'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
  
 
 def plot_hepl(path):
@@ -876,3 +876,13 @@ def plot_hepl(path):
     plot_proton_energy_verse(path)
     plot_proton_energy_utc(path)
     plot_proton_pitch_verse(path)
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number

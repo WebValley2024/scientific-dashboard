@@ -420,7 +420,7 @@ def aggregated_SCM_waveform(files, component='A231_W'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=lat, y=waveform, mode='lines', name=file)
+            go.Scatter(x=lat, y=waveform, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -440,7 +440,7 @@ def aggregated_SCM_waveform(files, component='A231_W'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
 
 
 def aggregated_SCM_angles(files, angle_type='polar'):
@@ -480,7 +480,7 @@ def aggregated_SCM_angles(files, angle_type='polar'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=latitude, y=angle, mode='lines', name=file)
+            go.Scatter(x=latitude, y=angle, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -496,4 +496,15 @@ def aggregated_SCM_angles(files, angle_type='polar'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
+
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number

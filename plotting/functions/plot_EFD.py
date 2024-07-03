@@ -201,7 +201,6 @@ def plot_EFD(path, multiple):
     # Display the first two figures
     col1, col2 = st.columns(2)
     if(multiple):
-        st.write("multiple")
         return fig1, fig2
     
     st.write("single file")
@@ -251,7 +250,7 @@ def aggregate_EFD_angles(files, angle_type='polar'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=latitude, y=angle, mode='lines', name=file)
+            go.Scatter(x=latitude, y=angle, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -267,7 +266,7 @@ def aggregate_EFD_angles(files, angle_type='polar'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
 
 def aggregate_EFD_waveform(files, waveform_type='X'):
     fig = go.Figure()
@@ -304,7 +303,7 @@ def aggregate_EFD_waveform(files, waveform_type='X'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=latitude, y=waveform, mode='lines', name=file)
+            go.Scatter(x=latitude, y=waveform, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -317,4 +316,15 @@ def aggregate_EFD_waveform(files, waveform_type='X'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
+
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number
