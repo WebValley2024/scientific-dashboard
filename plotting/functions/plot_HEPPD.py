@@ -13,7 +13,7 @@ import geopandas as gpd
 def plot_proton_electron_count_utc(path):
     if not path:
         return
-    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+    f = xr.open_zarr(path)
  
     time = f.UTCTime
     try:
@@ -88,7 +88,7 @@ def plot_proton_electron_count_utc(path):
  
 
 def plot_electron_energy_utc(path):
-    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+    f = xr.open_zarr(path)
     verse_time = f.UTCTime
     data = f.HEPD_ele_energy_pitch
     data = np.sum(data, axis=2)
@@ -149,7 +149,7 @@ def plot_electron_energy_utc(path):
  
 
 def plot_proton_energy_utc(path):
-    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+    f = xr.open_zarr(path)
     verse_time = f.UTCTime
     data = f.HEPD_pro_energy_pitch
     data = np.sum(data, axis=2)
@@ -409,7 +409,7 @@ def aggregate_HEPPD_electron_proton(files, count_type='electron'):
     fig = go.Figure()
  
     for file in files:
-        f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+        f = xr.open_zarr(file)
  
         # Extract the required variables
         LonLat = f.LonLat

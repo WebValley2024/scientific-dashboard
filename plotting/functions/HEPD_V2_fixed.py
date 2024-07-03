@@ -8,9 +8,10 @@ import xarray as xr
 import geopandas as gpd
 
 def plot_proton_electron_count_utc(path):
+    st.write("herhehre")
     if not path:
         return
-    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+    f = xr.open_zarr(path)
 
     time = f.UTCTime
     try:
@@ -288,12 +289,7 @@ def plot_protons_counts_on_map(path):
     )
     st.plotly_chart(fig)
 
-st.title("Proton and Electron Counts Analysis")
-
-path = st.text_input("Enter the path of the netCDF file:")
-
-if path:
-    st.header("Proton and Electron Counts over Time")
+def plot_HEPPD(path):
     plot_proton_electron_count_utc(path)
     
     st.header("Electron Energy Spectrum")
