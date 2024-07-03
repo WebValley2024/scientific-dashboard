@@ -12,7 +12,7 @@ import geopandas as gpd
 def plot_proton_electron_count_utc(path):
     if not path:
         return
-    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+    f = xr.open_zarr(path)
  
     time = f.UTCTime
     try:
@@ -87,7 +87,7 @@ def plot_proton_electron_count_utc(path):
  
 
 def plot_electron_energy_utc(path):
-    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+    f = xr.open_zarr(path)
     verse_time = f.UTCTime
     data = f.HEPD_ele_energy_pitch
     data = np.sum(data, axis=2)
@@ -148,7 +148,7 @@ def plot_electron_energy_utc(path):
  
 
 def plot_proton_energy_utc(path):
-    f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+    f = xr.open_zarr(path)
     verse_time = f.UTCTime
     data = f.HEPD_pro_energy_pitch
     data = np.sum(data, axis=2)
@@ -242,7 +242,7 @@ def plot_electrons_counts_on_map(path):
     fig = go.Figure()
  
     # Load world map using geopandas
-    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+    world = gpd.read_file('webappfiles/maps/ne_110m_admin_0_countries.shp')
  
     # Plot world map as background
     fig.add_trace(go.Choropleth(
@@ -339,9 +339,9 @@ def plot_protons_counts_on_map(path):
  
     # Create a scatter plot on a map using Plotly
     fig = go.Figure()
- 
+
     # Load world map using geopandas
-    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+    world = gpd.read_file('webappfiles/maps/ne_110m_admin_0_countries.shp')
  
     # Plot world map as background
     fig.add_trace(go.Choropleth(
@@ -408,7 +408,7 @@ def aggregate_HEPPD_electron_proton(files, count_type='electron'):
     fig = go.Figure()
  
     for file in files:
-        f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+        f = xr.open_zarr(file)
  
         # Extract the required variables
         LonLat = f.LonLat
@@ -450,7 +450,7 @@ def aggregate_HEPPD_electron_proton(files, count_type='electron'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
 
 def plot_HEPD(file_path):
     plot_proton_electron_count_utc(file_path)

@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from reducefreq import reduce_frequency
+from plotting.functions.reducefreq import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio
@@ -245,8 +245,11 @@ def aggregated_HEPPX_xray(files):
     fig = go.Figure()
  
     for file in files:
-        f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
- 
+        try:
+            f = xr.open_zarr(file)
+        except:
+            f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+  
         # Extract the required variables
         latitude = f['GEO_LAT'][...]
  
@@ -258,7 +261,7 @@ def aggregated_HEPPX_xray(files):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=latitude, y=count_data, mode='lines', name=file)
+            go.Scatter(x=latitude, y=count_data, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -271,7 +274,7 @@ def aggregated_HEPPX_xray(files):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
 
 
 def heppx_plot(f_path):
@@ -284,3 +287,13 @@ def heppx_plot(f_path):
         st.plotly_chart(plot_xray_count_utc_time(f_path))
 
     st.plotly_chart(plot_X_energy_spectrum_utc(f_path))
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number

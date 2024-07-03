@@ -127,7 +127,7 @@ from plotting.functions.reducefreq import reduce_frequency
  
  
  
-def plot_SCM(path):
+def plot_SCM(path, multiple):
 
     try:
         f = xr.open_zarr(path)
@@ -230,12 +230,14 @@ def plot_SCM(path):
             yaxis_title="Frequency (Hz)",
             legend=dict(x=1, y=0.5)
         )
-        st.plotly_chart(fig)
+        if(not multiple):
+            st.plotly_chart(fig)
         # fig.show()
  
     # Display the first two figures
-    st.plotly_chart(fig1)
-    st.plotly_chart(fig2)
+    if(not multiple):
+        st.plotly_chart(fig1)
+        st.plotly_chart(fig2)
     # fig1.show()
     # fig2.show()
     return fig1, fig2
@@ -418,7 +420,7 @@ def aggregated_SCM_waveform(files, component='A231_W'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=lat, y=waveform, mode='lines', name=file)
+            go.Scatter(x=lat, y=waveform, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -438,7 +440,7 @@ def aggregated_SCM_waveform(files, component='A231_W'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
 
 
 def aggregated_SCM_angles(files, angle_type='polar'):
@@ -478,7 +480,7 @@ def aggregated_SCM_angles(files, angle_type='polar'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=latitude, y=angle, mode='lines', name=file)
+            go.Scatter(x=latitude, y=angle, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -494,4 +496,15 @@ def aggregated_SCM_angles(files, angle_type='polar'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
+
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number

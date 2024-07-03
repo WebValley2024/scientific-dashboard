@@ -1,3 +1,4 @@
+
 import streamlit as st
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
@@ -10,7 +11,7 @@ def reduce_frequency(data, factor):
     # Your implementation here
     return data
 
-def lap_plot(f_paths):
+def plot_sequential_LAP(f_paths):
     # Create a subplots with two rows and one column, specifying secondary_y=True for each subplot
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.05, specs=[[{"secondary_y": True}], [{"secondary_y": True}]])
     
@@ -63,11 +64,11 @@ def lap_plot(f_paths):
             fig.add_trace(go.Scatter(x=df['time'], y=df['data2'], mode='lines', name='Electron Temperature', line=dict(color='red')), row=1, col=1, secondary_y=True)
         
         # Update y-axes titles
-        fig.update_yaxes(title_text="1/m^3", secondary_y=False, row=1, col=1)
-        fig.update_yaxes(title_text="K", secondary_y=True, row=1, col=1)
+        fig.update_yaxes(title_text="1/m^3", secondary_y=False, row=1, col=1,showgrid=False)
+        fig.update_yaxes(title_text="K", secondary_y=True, row=1, col=1,showgrid=False)
         if log:
-            fig.update_yaxes(type="log", secondary_y=False, row=1, col=1)
-            fig.update_yaxes(type="log", secondary_y=True, row=1, col=1)
+            fig.update_yaxes(type="log", secondary_y=False, row=1, col=1,showgrid=False)
+            fig.update_yaxes(type="log", secondary_y=True, row=1, col=1,showgrid=False)
         
         # Update x-axis title
         fig.update_xaxes(title_text="Time (UTC)", row=1, col=1)
@@ -116,11 +117,11 @@ def lap_plot(f_paths):
             fig.add_trace(go.Scatter(x=vers_extend, y=data2, name="Electron Temperature", line=dict(color='red')), row=2, col=1, secondary_y=True)
         
         # Configure y-axes
-        fig.update_yaxes(title_text="1/m^3", secondary_y=False, row=2, col=1)
-        fig.update_yaxes(title_text="K", secondary_y=True, row=2, col=1)
+        fig.update_yaxes(title_text="1/m^3", secondary_y=False, row=2, col=1,showgrid=False)
+        fig.update_yaxes(title_text="K", secondary_y=True, row=2, col=1,showgrid=False)
         if log:
-            fig.update_yaxes(type="log", secondary_y=False, row=2, col=1)
-            fig.update_yaxes(type="log", secondary_y=True, row=2, col=1)
+            fig.update_yaxes(type="log", secondary_y=False, row=2, col=1,showgrid=False)
+            fig.update_yaxes(type="log", secondary_y=True, row=2, col=1,showgrid=False)
         
         # Configure x-axis
         fig.update_xaxes(title_text="ms", row=2, col=1)
@@ -136,12 +137,3 @@ def lap_plot(f_paths):
     # Adjust layout and display the plot
     fig.update_layout(height=800, width=1200, title_text="Electron Density and Temperature")
     st.plotly_chart(fig)
-
-# Example usage:
-file_paths = [
-    '/home/wvuser/DATA SET tutorial/HEPPL/CSES_01_LAP_1_L02_A3_027340_20180801_015614_20180801_023341_000.zarr',
-    '/home/wvuser/DATA SET tutorial/HEPPL/CSES_01_LAP_1_L02_A3_027331_20180801_010858_20180801_014612_000.zarr',
-    # Add more paths as needed
-]
-
-lap_plot(file_paths)

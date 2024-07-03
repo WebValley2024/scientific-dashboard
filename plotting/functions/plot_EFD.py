@@ -28,7 +28,7 @@ import datetime
 
 
 
-def plot_EFD(path):
+def plot_EFD(path, multiple):
     
     try:
         f = xr.open_zarr(path)
@@ -171,7 +171,8 @@ def plot_EFD(path):
                     yaxis_title="Frequency (Hz)",
                     legend=dict(x=1, y=0.5)
                 )
-                st.plotly_chart(fig)
+                if(not multiple):
+                    st.plotly_chart(fig)
 
     # Display the third graph in a new row, centered
     if len(power_spectra) > 2:
@@ -193,17 +194,22 @@ def plot_EFD(path):
                 yaxis_title="Frequency (Hz)",
                 legend=dict(x=1, y=0.5)
             )
-            st.plotly_chart(fig)
+            if(not multiple):
+                st.plotly_chart(fig)
+
 
     # Display the first two figures
     col1, col2 = st.columns(2)
-
+    if(multiple):
+        return fig1, fig2
+    
+    st.write("single file")
     with col1:
         st.plotly_chart(fig1)
 
     with col2:
         st.plotly_chart(fig2)
-    return fig1, fig2
+
 
 def aggregate_EFD_angles(files, angle_type='polar'):
 
@@ -244,7 +250,7 @@ def aggregate_EFD_angles(files, angle_type='polar'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=latitude, y=angle, mode='lines', name=file)
+            go.Scatter(x=latitude, y=angle, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -260,7 +266,7 @@ def aggregate_EFD_angles(files, angle_type='polar'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
 
 def aggregate_EFD_waveform(files, waveform_type='X'):
     fig = go.Figure()
@@ -297,7 +303,7 @@ def aggregate_EFD_waveform(files, waveform_type='X'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=latitude, y=waveform, mode='lines', name=file)
+            go.Scatter(x=latitude, y=waveform, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -310,4 +316,15 @@ def aggregate_EFD_waveform(files, waveform_type='X'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
+
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number

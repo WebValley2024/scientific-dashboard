@@ -3,17 +3,18 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from reducefreq import reduce_frequency
+# from reducefreq import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio
 import streamlit as st
+from plotting.functions.reducefreq import reduce_frequency
 
 
 #all these methods take path to a zarr-File!!
 #TODO: both plot-against-time-methods do seperate scales for protons and electrons. 
 # do we want it that way??
-def plot_proton_electron_count_verse_time(path):
+def plot_proton_electron_count_verse_time(path, multiple):
     f = xr.open_zarr(path)
     verse_time = f.VERSE_TIME
     try:
@@ -69,7 +70,8 @@ def plot_proton_electron_count_verse_time(path):
         width=800,
         height=600,
     )
-    st.plotly_chart(fig)
+    if(not multiple):
+        st.plotly_chart(fig)
     return fig
 
 def plot_proton_electron_count_utc(path):
@@ -844,7 +846,7 @@ def aggregated_HEPPL_electron_proton(files, count_type='electron'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=latitude, y=count_data, mode='lines', name=file)
+            go.Scatter(x=latitude, y=count_data, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -860,11 +862,11 @@ def aggregated_HEPPL_electron_proton(files, count_type='electron'):
         template="plotly_white"
     )
  
-    return fig
+    st.plotly_chart(fig)
  
 
 def plot_hepl(path):
-    plot_proton_electron_count_verse_time(path)
+    plot_proton_electron_count_verse_time(path, False)
     plot_proton_electron_count_utc(path)
     plot_on_map_electron_count(path)
     plot_on_map_proton_count(path)
@@ -874,3 +876,13 @@ def plot_hepl(path):
     plot_proton_energy_verse(path)
     plot_proton_energy_utc(path)
     plot_proton_pitch_verse(path)
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number

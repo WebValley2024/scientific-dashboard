@@ -23,6 +23,7 @@ import logging
 from plotting.functions.plot_EFD import plot_EFD
 from plotting.functions.plot_LAP import lap_plot
 from plotting.functions.plot_HEPPX import heppx_plot
+
 from plotting.functions.plot_HEPPL import plot_hepl
 from plotting.functions.plot_SCM import scmplot
 from plotting.functions.plot_HEPPH import plotheph
