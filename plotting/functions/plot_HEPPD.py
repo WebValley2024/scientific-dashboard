@@ -9,7 +9,6 @@ import xarray as xr
 import plotly.express as px
 import plotly.io as pio
 import geopandas as gpd
- 
 def plot_proton_electron_count_utc(path):
     if not path:
         return
