@@ -8,6 +8,68 @@ import xarray as xr
 import plotly.express as px
 import plotly.io as pio
 
+def plot_XrayRate_LAT_X(fig, path):
+    # Open the dataset using the h5netcdf engine
+    try:
+        f = xr.open_zarr(path)
+    except:
+        f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+
+    # Extract the required variables
+    latitude = f['GEO_LAT'][...]
+    data = f.XrayRate
+
+
+    # Reduce the frequency of the data
+    data = reduce_frequency(data, 1)
+
+    log = True
+
+    # Get the frequency dimension
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data = data.values[1:].flatten()
+    # Remove the first element of the latitude and flatten it
+    latitude = latitude.values[1:]
+
+    # Get the length to be able to plot it
+    len_lat = len(latitude)
+
+    # Plot everything
+    lat_extend = np.concatenate([np.linspace(latitude[i], latitude[i + 1], freq, endpoint=False) for i in range(len_lat - 1)])
+    lat_extend = np.concatenate([lat_extend, np.linspace(latitude[-2], latitude[-1], freq)])
+
+    # Create subplots with a secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=lat_extend, y=data, name="X-Ray Count", line=dict(color='blue')),
+        secondary_y=False
+    )
+
+    fig.update_yaxes(title_text="1/s", secondary_y=False)
+    if log:
+        fig.update_yaxes(type="log", secondary_y=False)
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="LAT")
+
+    # Configure layout
+    fig.update_layout(
+        title="X-Ray Count",
+        template="plotly_white",
+        autosize=False,
+        width=800,
+        height=600,
+    )
+
+    return fig
+
+
+
+
 def plot_xray_count_verse_time(path):
     try:
         f = xr.open_zarr(path)
@@ -238,6 +300,45 @@ def plot_X_energy_spectrum_utc(path):
     ))
     st.plotly_chart(fig)
 
+# not sure if this works
+ 
+def aggregated_HEPPX_xray(files):
+ 
+    fig = go.Figure()
+ 
+    for file in files:
+        try:
+            f = xr.open_zarr(file)
+        except:
+            f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+  
+        # Extract the required variables
+        latitude = f['GEO_LAT'][...]
+ 
+        count_data = f['XrayRate']
+ 
+        # Flatten the data for plotting
+        latitude = latitude.values.flatten()
+        count_data = count_data.values.flatten()
+ 
+        # Plot the data
+        fig.add_trace(
+            go.Scatter(x=latitude, y=count_data, mode='lines', name=str(orbit_number(file)))
+        )
+ 
+    # Configure the layout
+    y_axis_title = "XRay Count"
+ 
+    fig.update_layout(
+        title=f"{y_axis_title} vs GEO_LAT",
+        xaxis_title="GEO_LAT",
+        yaxis_title=y_axis_title,
+        template="plotly_white"
+    )
+
+    return fig
+    # st.plotly_chart(fig)
+
 
 def heppx_plot(f_path):
     if not f_path:
@@ -249,3 +350,13 @@ def heppx_plot(f_path):
         st.plotly_chart(plot_xray_count_utc_time(f_path))
 
     st.plotly_chart(plot_X_energy_spectrum_utc(f_path))
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number

@@ -4,13 +4,8 @@ import plotly.graph_objects as go
 import xarray as xr
 import pandas as pd
 import numpy as np
-from plot_EFD import plot_EFD
+from plotting.functions.plot_EFD import plot_EFD
 
-paths = [
-    "/home/wvuser/cses_personal_data/CSES_01_EFD_1_L02_A1_213330_20211206_164953_20211206_172707_000.h5",
-    "/home/wvuser/webvalley2024/Small_samples/CSES_01_EFD_1_L02_A1_104240_20191219_235348_20191220_002832_000.h5",
-    "/home/wvuser/webvalley2024/Small_samples/CSES_01_EFD_1_L02_A1_104241_20191220_004117_20191220_011551_000.h5"
-]
 
 def plot_sequential_EFD(paths):
     # Initialize empty lists to store figures
@@ -20,7 +15,7 @@ def plot_sequential_EFD(paths):
     # Loop through each path and plot EFD
     for path in paths:
         try:
-            fig1, fig2 = plot_EFD(path)  # Assuming plot_EFD returns fig1 and fig2
+            fig1, fig2 = plot_EFD(path, True)  # Assuming plot_EFD returns fig1 and fig2
             all_fig1.append(fig1)
             all_fig2.append(fig2)
         except Exception as e:
@@ -48,7 +43,8 @@ def plot_sequential_EFD(paths):
     fig_combined2.update_layout(height=600, title_text="Combined EFD Plots")
     fig_combined2.update_traces(selector=dict(name='Polar Angle'), marker=dict(color='green'))
     # Plot using Streamlit
-    st.plotly_chart(fig_combined)
-    st.plotly_chart(fig_combined2)
+    st.write("plotting")
+    return fig_combined, fig_combined2
+    # st.plotly_chart(fig_combined)
+    # st.plotly_chart(fig_combined2)
 
-plot_sequential_EFD(paths)

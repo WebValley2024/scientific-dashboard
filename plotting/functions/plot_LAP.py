@@ -71,6 +71,120 @@ def plot_twin_timeline_verse_time(fig, path):
     return fig
 
 
+def plot_A311(fig, path):
+    # Open the dataset using the h5netcdf engine
+    try:
+        f = xr.open_zarr(path)
+    except:
+        f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+
+    # Extract the required variables
+    latitude = f['GEO_LAT'][...]
+    data = f['A311'][...]
+
+
+    # Reduce the frequency of the data
+    data = reduce_frequency(data, 1)
+
+    log = True
+
+    # Get the frequency dimension
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data = data.values[1:].flatten()
+    # Remove the first element of the latitude and flatten it
+    latitude = latitude.values[1:]
+
+    # Get the length to be able to plot it
+    len_lat = len(latitude)
+
+    # Plot everything
+    lat_extend = np.concatenate([np.linspace(latitude[i], latitude[i + 1], freq, endpoint=False) for i in range(len_lat - 1)])
+    lat_extend = np.concatenate([lat_extend, np.linspace(latitude[-2], latitude[-1], freq)])
+
+    # Create subplots with a secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=lat_extend, y=data, name="Electron Density", line=dict(color='blue')),
+        secondary_y=False
+    )
+
+
+
+    # Configure y-axes
+    fig.update_yaxes(title_text="1/m^3", secondary_y=False)
+
+    if log:
+        fig.update_yaxes(type="log", secondary_y=False)
+
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="Latitude")
+
+    return fig
+
+
+def plot_A321(fig, path):
+    # Open the dataset using the h5netcdf engine
+    try:
+        f = xr.open_zarr(path)
+    except:
+        f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+
+    # Extract the required variables
+    latitude = f['GEO_LAT'][...]
+    data = f['A321'][...]
+
+
+    # Reduce the frequency of the data
+    data = reduce_frequency(data, 1)
+
+    log = True
+
+    # Get the frequency dimension
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data = data.values[1:].flatten()
+    # Remove the first element of the latitude and flatten it
+    latitude = latitude.values[1:]
+
+    # Get the length to be able to plot it
+    len_lat = len(latitude)
+
+    # Plot everything
+    lat_extend = np.concatenate([np.linspace(latitude[i], latitude[i + 1], freq, endpoint=False) for i in range(len_lat - 1)])
+    lat_extend = np.concatenate([lat_extend, np.linspace(latitude[-2], latitude[-1], freq)])
+
+    # Create subplots with a secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=lat_extend, y=data, name="Electron Density", line=dict(color='blue')),
+        secondary_y=False
+    )
+
+
+
+    # Configure y-axes
+    fig.update_yaxes(title_text="1/m^3", secondary_y=False)
+
+    if log:
+        fig.update_yaxes(type="log", secondary_y=False)
+
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="Latitude")
+
+    return fig
+
+
+
+
 def plot_twin_timeline_utc(fig, path):
     try:
         f = xr.open_zarr(path)
@@ -302,7 +416,7 @@ def aggregated_LAP_electron(files, variable='A311'):
     fig = go.Figure()
  
     for file in files:
-        f = xr.open_dataset(file, engine='h5netcdf', phony_dims='sort')
+        f = xr.open_zarr(file)
  
         # Extract the required variables
         latitude = f['GEO_LAT'][...]
@@ -314,10 +428,10 @@ def aggregated_LAP_electron(files, variable='A311'):
         # Flatten the data for plotting
         measure = data.values.flatten()
         lat = latitude.values.flatten()
- 
+
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=lat, y=measure, mode='lines', name=file)
+            go.Scatter(x=lat, y=measure, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -332,5 +446,17 @@ def aggregated_LAP_electron(files, variable='A311'):
         yaxis_title=y_axis_title,
         template="plotly_white"
     )
- 
+
     return fig
+ 
+    # st.plotly_chart(fig)
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number
