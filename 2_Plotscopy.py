@@ -112,13 +112,13 @@ over_plot_file = st.selectbox("", search_bar_files, format_func=lambda filepath:
 st.divider()
 
 
-st.write(filtered_files_df)
+# st.write(filtered_files_df)
 payload_filtered_files = filtered_files_df[filtered_files_df['payload']== payload]['filepath']
-st.write("Payload filtered files", payload_filtered_files)
+# st.write("Payload filtered files", payload_filtered_files)
 asc_des_filtered_files = ascending_descending_filter(payload_filtered_files, asc_des)
 
 st.write("Acsending file", asc_des_filtered_files)
-st.write(len(asc_des_filtered_files))
+# st.write(len(asc_des_filtered_files))
 
 if len(asc_des_filtered_files) < 2:
     st.warning("No files within this filter", icon="⚠️")

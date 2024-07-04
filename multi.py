@@ -56,7 +56,11 @@ from func.plot_HEPPX import aggregated_HEPPX_xray
 # from func.HEPPL_Mul_plot import plosequential_HEPPL
 # from func.plot_sequential_HEPPL import plot_proton_electron_count_verse_time
 
-if not st.session_state.filtered_files:
+st.session_state.search = False
+try:
+    filtered_files = st.session_state.filtered_files
+except:
+    st.warning("No filter found!", icon="⚠️")
     st.stop()
 
 filtered_files = st.session_state.filtered_files
@@ -109,9 +113,9 @@ def extract_dates(file_name):
     
 # Function for map drawing
 def draw_map():
-    dataset_type = extract_dataset_type(filtered_files)
-    print(dataset_type)
-    st.write(dataset_type)
+    st.write(st.session_state.filtered_files["filepath"].astype(str))
+    dataset_type = extract_dataset_type(st.session_state.filtered_files["filepath"].astype(str))
+
 
     option = st.multiselect(
         "Instrument Type",
@@ -252,7 +256,7 @@ def draw_map():
         st.write("Done processing & plotting")
         st.write("Took ", total, " seconds")
 
-def extract_dataset_type(file_paths):    
+def extract_dataset_type(file_paths):
     dataset_types = []
     
     for file_path in file_paths:

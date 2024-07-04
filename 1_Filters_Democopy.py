@@ -14,7 +14,7 @@ st.sidebar.header("Plotting Demo")
 
 #progress_bar = st.sidebar.progress(0)
 status_text = st.sidebar.empty()
-m = folium.Map(location=[0, 0], zoom_start=1.15, crs="EPSG4326")
+m = folium.Map(location=[45.5, -122.6], zoom_start=2, max_bounds=True)
 draw = Draw(
     draw_options={
         'polyline': False,
