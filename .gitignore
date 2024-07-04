@@ -1,5 +1,6 @@
 # Project specific folders and files
 data/
+*.gpkg
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
