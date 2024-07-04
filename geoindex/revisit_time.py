@@ -229,3 +229,45 @@ def plot_revisit_times(revisit_times_df, convert = 3600, title = ""):
     plt.title('Point Distribution in Grid')
     plt.show()
 
+def plot_revisit_times_on_map(revisit_times_copy, convert = 3600, title = "", LON_DIVISIONS = 36, LAT_DIVISIONS = 18):
+    MIN_LON, MAX_LON = -175, 180
+    MIN_LAT, MAX_LAT = -75, 75
+    lon_step = (MAX_LON - MIN_LON) / LON_DIVISIONS
+    lat_step = (MAX_LAT - MIN_LAT) / LAT_DIVISIONS
+
+    geometries = [
+        box(
+            MIN_LON + lon_index * lon_step,
+            MIN_LAT + lat_index * lat_step,
+            MIN_LON + (lon_index + 1) * lon_step,
+            MIN_LAT + (lat_index + 1) * lat_step,
+        )
+        for lat_index, lon_index in zip(revisit_times_copy["lat_index"], revisit_times_copy["lon_index"])
+    ]
+    revisit_times_copy["revisit_time"] = (
+            revisit_times_copy["revisit_time"].dt.total_seconds() / convert)  # Convert to hours
+    gdf = gpd.GeoDataFrame(revisit_times_copy, geometry=geometries, crs="EPSG:4326")
+
+    # Plot the grid cell densities on a map
+    fig, ax = plt.subplots(figsize=(15, 5))
+    gdf.to_crs(epsg=3857).plot(
+        # gdf.plot(
+        column="revisit_time",
+        ax=ax,
+        legend=True,
+        cmap="Spectral",
+        edgecolor="black",
+        linewidth=0.5,
+        alpha=0.5,
+    )
+
+    ctx.add_basemap(
+        ax,
+        zoom=2,
+        source=ctx.providers.OpenStreetMap.Mapnik,
+        # crs=gdf.crs,
+    )  # Use another provider
+    fig.suptitle(title)
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    return fig
