@@ -3,16 +3,132 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from reducefreq import reduce_frequency
+# from reducefreq import reduce_frequency
 import xarray as xr
 import plotly.express as px
 import plotly.io as pio
+import streamlit as st
+from plotting.functions.reducefreq import reduce_frequency
 
 
 #all these methods take path to a zarr-File!!
 #TODO: both plot-against-time-methods do seperate scales for protons and electrons. 
 # do we want it that way??
-def plot_proton_electron_count_verse_time(path):
+def plot_electron_LAT_L(fig, path):
+    f = xr.open_zarr(path)
+    verse_time = f.GEO_LAT
+    try:
+        data2 = f.Count_electron
+    except:
+        data2 = f.Count_Electron
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data2 = data2.values[50:].flatten()
+
+    # Do the same with the verse time
+    verse_time = verse_time.values[50:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+    # Plot everything
+    # Create extended time array to match the frequency
+    freq = data2.shape[0] // len_time  # Assuming data and verse_time have compatible lengths
+    vers_extend = np.concatenate([np.linspace(verse_time[i], verse_time[i+1], freq, endpoint=False) for i in range(len_time-1)])
+    vers_extend = np.concatenate([vers_extend, np.linspace(verse_time[-2], verse_time[-1], freq)])
+
+    # Create subplots with a secondary y-axis
+    
+
+    # Add trace for Count_electron (data)
+
+
+    # Add trace for Count_proton (data2) on the secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=vers_extend, y=data2, name="Electron Count", line=dict(color='red')),
+        secondary_y=False
+    )
+
+    # Configure y-axes
+    fig.update_yaxes(title_text="Electron Count", secondary_y=False)
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="Latitude")
+
+    # Configure layout
+    fig.update_layout(
+        title="Electron Counts over LAT",
+        template="plotly_white",
+        autosize=False,
+        width=800,
+        height=600,
+    )
+    return fig
+
+
+
+
+def plot_proton_LAT_L(fig, path):
+    f = xr.open_zarr(path)
+    verse_time = f.GEO_LAT
+    try:
+        data2 = f.Count_proton
+    except:
+        data2 = f.Count_Proton
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data2 = data2.values[50:].flatten()
+
+    # Do the same with the verse time
+    verse_time = verse_time.values[50:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+    # Plot everything
+    # Create extended time array to match the frequency
+    freq = data2.shape[0] // len_time  # Assuming data and verse_time have compatible lengths
+    vers_extend = np.concatenate([np.linspace(verse_time[i], verse_time[i+1], freq, endpoint=False) for i in range(len_time-1)])
+    vers_extend = np.concatenate([vers_extend, np.linspace(verse_time[-2], verse_time[-1], freq)])
+
+    # Create subplots with a secondary y-axis
+    fig = make_subplots(specs=[[{"secondary_y": False}]])
+
+    # Add trace for Count_electron (data)
+
+
+    # Add trace for Count_proton (data2) on the secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=vers_extend, y=data2, name="Proton Count", line=dict(color='red')),
+        secondary_y=False
+    )
+
+    # Configure y-axes
+    fig.update_yaxes(title_text="Proton Count", secondary_y=False)
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="Latitude")
+
+    # Configure layout
+    fig.update_layout(
+        title="Proton Counts over LAT",
+        template="plotly_white",
+        autosize=False,
+        width=800,
+        height=600,
+    )
+
+    return fig
+
+
+
+
+
+
+
+
+
+def plot_proton_electron_count_verse_time(path, multiple):
     f = xr.open_zarr(path)
     verse_time = f.VERSE_TIME
     try:
@@ -68,7 +184,9 @@ def plot_proton_electron_count_verse_time(path):
         width=800,
         height=600,
     )
-    fig.show()
+    if(not multiple):
+        st.plotly_chart(fig)
+    return fig
 
 def plot_proton_electron_count_utc(path):
 
@@ -142,7 +260,7 @@ def plot_proton_electron_count_utc(path):
         height=600
     )
 
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_on_map_electron_count(path):
     f = xr.open_zarr(path)
@@ -215,7 +333,7 @@ def plot_on_map_electron_count(path):
     )
     fig.update_layout(title = "Electron Counts", template="plotly_white")
 
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_on_map_proton_count(path):
     f = xr.open_zarr(path)
@@ -288,7 +406,7 @@ def plot_on_map_proton_count(path):
     )
     fig.update_layout(title = "Proton Counts", template="plotly_white")
 
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_electron_energy_verse(path):
     f = xr.open_zarr(path)
@@ -344,7 +462,7 @@ def plot_electron_energy_verse(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_electron_energy_utc(path):
     f = xr.open_zarr(path)
@@ -406,7 +524,7 @@ def plot_electron_energy_utc(path):
         xaxis=dict(showgrid=False),  # Disable gridlines on x-axis
         yaxis=dict(showgrid=False),  # Disable gridlines on y-axis
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_electron_pitch_verse(path):
     f = xr.open_zarr(path)
@@ -553,7 +671,7 @@ def plot_electron_pitch_verse(path):
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Pitch (degree)",
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 
 def plot_proton_energy_verse(path):
@@ -606,7 +724,7 @@ def plot_proton_energy_verse(path):
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Energy (KeV)",
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 def plot_proton_energy_utc(path):
     f = xr.open_zarr(path)
@@ -664,7 +782,7 @@ def plot_proton_energy_utc(path):
         xaxis_title = "UTC Time",
         yaxis_title = "Energy (KeV) CHECK UNIT!",
     ))
-    fig.show()
+    st.plotly_chart(fig)
 
 
 def plot_proton_pitch_verse(path):
@@ -812,4 +930,74 @@ def plot_proton_pitch_verse(path):
         xaxis_title = "Verse Time (ms)",
         yaxis_title = "Pitch (degree)",
     ))
-    fig.show()
+    st.plotly_chart(fig)
+
+
+def aggregated_HEPPL_electron_proton(files, count_type='electron'):
+ 
+    fig = go.Figure()
+ 
+    for file in files:
+        f = xr.open_zarr(file)
+ 
+        # Extract the required variables
+        latitude = f['GEO_LAT'][...]
+ 
+        if count_type == 'electron':
+            try:
+                count_data = f['Count_electron'][...]
+            except:
+                count_data = f['Count_Electron'][...]
+        else:
+            try:
+                count_data = f['Count_proton'][...]
+            except:
+                count_data = f['Count_Proton'][...]
+ 
+        # Flatten the data for plotting
+        latitude = latitude.values.flatten()
+        count_data = count_data.values.flatten()
+ 
+        # Plot the data
+        fig.add_trace(
+            go.Scatter(x=latitude, y=count_data, mode='lines', name=str(orbit_number(file)))
+        )
+ 
+    # Configure the layout
+    if count_type == 'electron':
+        y_axis_title = "Electron Count"
+    else:
+        y_axis_title = "Proton Count"
+ 
+    fig.update_layout(
+        title=f"{y_axis_title} vs GEO_LAT",
+        xaxis_title="GEO_LAT",
+        yaxis_title=y_axis_title,
+        template="plotly_white"
+    )
+
+    return fig
+    # st.plotly_chart(fig)
+ 
+
+def plot_hepl(path):
+    plot_proton_electron_count_verse_time(path, False)
+    plot_proton_electron_count_utc(path)
+    plot_on_map_electron_count(path)
+    plot_on_map_proton_count(path)
+    plot_electron_energy_verse(path)
+    plot_electron_energy_utc(path)
+    plot_electron_pitch_verse(path)
+    plot_proton_energy_verse(path)
+    plot_proton_energy_utc(path)
+    plot_proton_pitch_verse(path)
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number
