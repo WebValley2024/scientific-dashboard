@@ -122,7 +122,6 @@ examples for calling:
 #orbit_aggregation, cell_aggregation, diff = lambda g: g.max() - g.min(), "min", False # -> minimum duration of passage through cell
 #orbit_aggregation, cell_aggregation, diff = lambda g: g.max() - g.min(), "max", False # -> maximum duration of passage through cell
 orbit_aggregation, cell_aggregation, diff = "median", "median", True # -> median time till satellite revisites a cell
-#orbit_aggregation, cell_aggregation, diff = lambda g: g.max() - g.min(), "med", False # -> maximum duration of passage through cell
 
 
 revisit_times_df = get_revisit_times(
@@ -131,6 +130,8 @@ revisit_times_df = get_revisit_times(
     cell_aggregation=cell_aggregation,
     diff=diff
 )
+
+results look weird but code was checked quite intensively
 """
 def get_revisit_times(
     combined_grid_df, orbit_aggregation="median", cell_aggregation="median", diff=False
