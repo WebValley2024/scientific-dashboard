@@ -177,6 +177,9 @@ def plot_SCM(path, multiple):
     # Ensure vers_extend has the same length as the waveforms
     vers_extend = np.concatenate([np.linspace(verse_time[i], verse_time[i+1], reduced_freq, endpoint=False) for i in range(len_time-1)])
     vers_extend = np.concatenate([vers_extend, np.linspace(verse_time[-2], verse_time[-1], reduced_freq)])
+
+    lat_extend = np.concatenate([np.linspace(latitude[i], latitude[i + 1], freq, endpoint=False) for i in range(len_lat - 1)])
+    lat_extend = np.concatenate([lat_extend, np.linspace(latitude[-2], latitude[-1], freq)])
     # First figure for waveforms and magnitude
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=vers_extend, y=X_Waveform, mode='lines', name='X Waveform'))
@@ -243,6 +246,7 @@ def plot_SCM(path, multiple):
     return fig1, fig2
  
  
+
  
 def plot_SCM_on_map(data, latitude, longitude):
     try:
@@ -510,3 +514,171 @@ def orbit_number(filename):
     number = parts[6]
     
     return number
+
+
+def plot_A231_W(fig, path):
+    # Open the dataset using the h5netcdf engine
+    try:
+        f = xr.open_zarr(path)
+    except:
+        f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+
+    # Extract the required variables
+    latitude = f['GEO_LAT'][...]
+    data = f['A231_W'][...]
+
+
+    # Reduce the frequency of the data
+    data = reduce_frequency(data, 1)
+
+    log = True
+
+    # Get the frequency dimension
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data = data.values[1:].flatten()
+    # Remove the first element of the latitude and flatten it
+    latitude = latitude.values[1:]
+
+    # Get the length to be able to plot it
+    len_lat = len(latitude)
+
+    # Plot everything
+    lat_extend = np.concatenate([np.linspace(latitude[i], latitude[i + 1], freq, endpoint=False) for i in range(len_lat - 1)])
+    lat_extend = np.concatenate([lat_extend, np.linspace(latitude[-2], latitude[-1], freq)])
+
+    # Create subplots with a secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=lat_extend, y=data, name="X-Waveform", line=dict(color='blue')),
+        secondary_y=False
+    )
+
+
+
+    # Configure y-axes
+    fig.update_yaxes(title_text="Hz", secondary_y=False)
+
+    if log:
+        fig.update_yaxes(type="log", secondary_y=False)
+
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="Latitude")
+
+    return fig
+
+
+def plot_A232_W(fig, path):
+    # Open the dataset using the h5netcdf engine
+    try:
+        f = xr.open_zarr(path)
+    except:
+        f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+
+    # Extract the required variables
+    latitude = f['GEO_LAT'][...]
+    data = f['A232_W'][...]
+
+
+    # Reduce the frequency of the data
+    data = reduce_frequency(data, 1)
+
+    log = True
+
+    # Get the frequency dimension
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data = data.values[1:].flatten()
+    # Remove the first element of the latitude and flatten it
+    latitude = latitude.values[1:]
+
+    # Get the length to be able to plot it
+    len_lat = len(latitude)
+
+    # Plot everything
+    lat_extend = np.concatenate([np.linspace(latitude[i], latitude[i + 1], freq, endpoint=False) for i in range(len_lat - 1)])
+    lat_extend = np.concatenate([lat_extend, np.linspace(latitude[-2], latitude[-1], freq)])
+
+    # Create subplots with a secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=lat_extend, y=data, name="Y-Waveform", line=dict(color='blue')),
+        secondary_y=False
+    )
+
+
+
+    # Configure y-axes
+    fig.update_yaxes(title_text="Hz", secondary_y=False)
+
+    if log:
+        fig.update_yaxes(type="log", secondary_y=False)
+
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="Latitude")
+
+    return fig
+
+
+def plot_A233_W(fig, path):
+    # Open the dataset using the h5netcdf engine
+    try:
+        f = xr.open_zarr(path)
+    except:
+        f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+
+    # Extract the required variables
+    latitude = f['GEO_LAT'][...]
+    data = f['A233_W'][...]
+
+
+    # Reduce the frequency of the data
+    data = reduce_frequency(data, 1)
+
+    log = True
+
+    # Get the frequency dimension
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data = data.values[1:].flatten()
+    # Remove the first element of the latitude and flatten it
+    latitude = latitude.values[1:]
+
+    # Get the length to be able to plot it
+    len_lat = len(latitude)
+
+    # Plot everything
+    lat_extend = np.concatenate([np.linspace(latitude[i], latitude[i + 1], freq, endpoint=False) for i in range(len_lat - 1)])
+    lat_extend = np.concatenate([lat_extend, np.linspace(latitude[-2], latitude[-1], freq)])
+
+    # Create subplots with a secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=lat_extend, y=data, name="Z-Waveform", line=dict(color='blue')),
+        secondary_y=False
+    )
+
+
+
+    # Configure y-axes
+    fig.update_yaxes(title_text="Hz", secondary_y=False)
+
+    if log:
+        fig.update_yaxes(type="log", secondary_y=False)
+
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="Latitude")
+
+    return fig

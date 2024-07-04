@@ -8,6 +8,68 @@ import xarray as xr
 import plotly.express as px
 import plotly.io as pio
 
+def plot_XrayRate_LAT_X(fig, path):
+    # Open the dataset using the h5netcdf engine
+    try:
+        f = xr.open_zarr(path)
+    except:
+        f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
+
+    # Extract the required variables
+    latitude = f['GEO_LAT'][...]
+    data = f.XrayRate
+
+
+    # Reduce the frequency of the data
+    data = reduce_frequency(data, 1)
+
+    log = True
+
+    # Get the frequency dimension
+    try:
+        freq = data.shape[1]
+    except:
+        freq = 1
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data = data.values[1:].flatten()
+    # Remove the first element of the latitude and flatten it
+    latitude = latitude.values[1:]
+
+    # Get the length to be able to plot it
+    len_lat = len(latitude)
+
+    # Plot everything
+    lat_extend = np.concatenate([np.linspace(latitude[i], latitude[i + 1], freq, endpoint=False) for i in range(len_lat - 1)])
+    lat_extend = np.concatenate([lat_extend, np.linspace(latitude[-2], latitude[-1], freq)])
+
+    # Create subplots with a secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=lat_extend, y=data, name="X-Ray Count", line=dict(color='blue')),
+        secondary_y=False
+    )
+
+    fig.update_yaxes(title_text="1/s", secondary_y=False)
+    if log:
+        fig.update_yaxes(type="log", secondary_y=False)
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="LAT")
+
+    # Configure layout
+    fig.update_layout(
+        title="X-Ray Count",
+        template="plotly_white",
+        autosize=False,
+        width=800,
+        height=600,
+    )
+
+    return fig
+
+
+
+
 def plot_xray_count_verse_time(path):
     try:
         f = xr.open_zarr(path)
