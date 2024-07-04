@@ -87,20 +87,19 @@ def dataset(path):
         ds = xr.open_zarr(path)
         return ds
     except Exception as e:
-        ds = xr.open_dataset(path, engine="h5netcdf", phony_dims="sort")
+        ds = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
         return ds
-
 
 def file_selector():
     folder_path = DATA_DIR
     filenames = os.listdir(folder_path)
+
     file_paths = [
-        os.path.join(folder_path, filename)
-        for filename in filenames
-        if os.path.isfile(os.path.join(folder_path, filename))
+      os.path.join(folder_path, filename)
+      for filename in filenames 
+      if os.path.isfile(os.path.join(folder_path, filename))
     ]
     return file_paths
-
 
 # def search_files(st_map, start_date, end_date,):
 #     last_active_drawing = st_map.get('last_active_drawing')
@@ -144,11 +143,49 @@ def return_coordinates(st_map):
             st.write("No 'coordinates' found in 'geometry'.")
     else:
         st.write("No 'last_active_drawing' found in st_map.")
+    
+    return
 
-    return None
+# def wrap_coordinates_list(coordinate_list):
+#     """
+#     Wraps a list of latitude and longitude coordinates to keep them within valid ranges.
+    
+#     Args:
+#     coordinate_list (list of lists): List containing [latitude, longitude] pairs
+    
+#     Returns:
+#     list of lists: Wrapped list of [latitude, longitude] pairs
+#     """
+#     def wrap_coordinates(lat, lon):
+#         """
+#         Wrap latitude and longitude to keep them within their valid ranges.
+        
+#         Latitude range: -90 to 90 degrees
+#         Longitude range: -180 to 180 degrees
+        
+#         Args:
+#         lat (float): Latitude value
+#         lon (float): Longitude value
+        
+#         Returns:
+#         tuple: Wrapped (latitude, longitude)
+#         """
+#         # Wrap latitude
+#         lat = (lat + 90) % 360 - 90
+#         if lat > 90:
+#             lat = 180 - lat
+#         elif lat < -90:
+#             lat = -180 - lat
+
+#         # Wrap longitude
+#         lon = (lon + 180) % 360 - 180
+
+#         return lat, lon
+
+#     return [wrap_coordinates(lat, lon) for lat, lon in coordinate_list]
 
 
-import pandas as pd
+
 
 
 def polygon(points, files):
@@ -179,11 +216,10 @@ def polygon(points, files):
             intersectionFile.append(file)
     return intersectionFile
 
-
 def ascending_descending_filter(files_path, asc_des):
     ascending = []
     descending = []
-    st.write("THE FILE PATHS: ", files_path)
+
     for file in files_path:
         if int(extract_orbit(file)) % 2 == 0:
             descending.append(file)
@@ -194,7 +230,7 @@ def ascending_descending_filter(files_path, asc_des):
     else:
         return descending
 
-
+      
 def date_interval_filter(files_path, start_date_selector, end_date_selector):
     files_list = []
     for file in files_path:
@@ -226,3 +262,4 @@ def orbit_filter(file_paths, orbit):
         if extract_orbit(file_path) == orbit:
             paths.append(file_path)
     return paths
+
