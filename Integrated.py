@@ -42,10 +42,10 @@ from plotting.functions.plot_HEPPL import aggregated_HEPPL_electron_proton
 
 from plotting.functions.plot_HEPPH import plotheph
 from plotting.functions.plot_HEPPH import aggregated_HEPPH_electron_proton
-from plotting.functions.HEPPH_MUL_plot import plot_sequential_HEPPH
+#from plotting.functions.HEPPH_MUL_plot import plot_sequential_HEPPH
 
 from plotting.functions.HEPD_V2_fixed import plot_HEPPD
-from plotting.functions.HEPPD_Mul_plot import plot_HEPD_multiple_files
+#from plotting.functions.HEPPD_Mul_plot import plot_HEPD_multiple_files
 from plotting.functions.plot_HEPPD import plot_HEPD
 from plotting.functions.plot_HEPPD import aggregate_HEPPD_electron_proton
 
@@ -58,7 +58,7 @@ from plotting.functions.plot_HEPPX import aggregated_HEPPX_xray
 
 
 #REPLACE
-folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/concat'
+folder_path = '/home/wvuser/cses_personal_data'
 
 def dataset(path):
     try:
@@ -531,7 +531,7 @@ def extract_dataset_type(file_paths):
             raise ValueError(f"Unknown dataset type in file name: {file_name}")
     return dataset_types
 
-def file_selector(folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/concat'):
+def file_selector(folder_path = '/home/wvuser/cses_personal_data'):
     filenames = os.listdir(folder_path)
     file_paths = [os.path.join(folder_path, filename) for filename in filenames]
     st.write("files selected")

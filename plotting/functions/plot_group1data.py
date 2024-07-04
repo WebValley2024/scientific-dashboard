@@ -377,23 +377,25 @@ def plot_group1_data(kind, start_date, end_date):
         plot_swe_data(data)
 
 def plot_group1_data_with_specific_function(kind, cses_data_paths, function_type):
-    all_fig= []
-    all_fig1 =[]
-    all_fig2 =[]
-    
+    all_fig1 = []
+    all_fig2 = []
+
     for cses_data_path in cses_data_paths:
         try:
             f = xr.open_zarr(cses_data_path)
         except:
-            f = xr.open_dataset(cses_data_path, engine = 'h5netcdf', phony_dims = 'sort')
+            f = xr.open_dataset(cses_data_path, engine='h5netcdf', phony_dims='sort')
+
         try:
-            start_date=f['UTC_TIME'][...].values.min()
-            end_date=f['UTC_TIME'][...].values.max()
+            start_date = f['UTC_TIME'][...].values.min()
+            end_date = f['UTC_TIME'][...].values.max()
         except:
-            start_date=f['UTCTime'][...].values.min()
-            end_date=f['UTCTime'][...].values.max()
+            start_date = f['UTCTime'][...].values.min()
+            end_date = f['UTCTime'][...].values.max()
+
         group1_data_plot = get_catalogue_data(kind, start_date, end_date)
-        if function_type=="EFD":
+
+        if function_type == "EFD":
             try:
                 fig1, fig2 = plot_EFD(cses_data_path, True)  # Assuming plot_EFD returns fig1 and fig2
                 all_fig1.append(fig1)
@@ -402,14 +404,15 @@ def plot_group1_data_with_specific_function(kind, cses_data_paths, function_type
                 all_fig2.append(group1_data_plot)
             except Exception as e:
                 st.error(f"Error processing {cses_data_path}: {str(e)}")
+
             fig_combined = make_subplots(rows=1, cols=1, shared_xaxes=True, vertical_spacing=0.1)
             fig_combined2 = make_subplots(rows=1, cols=1, shared_xaxes=True, vertical_spacing=0.1)
             for fig1 in all_fig1:
-                for trace in fig1:
+                for trace in fig1.data:  # Ensure trace is correctly accessed
                     fig_combined.add_trace(trace, row=1, col=1)
-    
+
             for fig2 in all_fig2:
-                for trace in fig2:
+                for trace in fig2.data:  # Ensure trace is correctly accessed
                     fig_combined2.add_trace(trace, row=1, col=1)
 
             fig_combined.update_layout(height=600, title_text="Combined EFD Plots")
@@ -418,25 +421,24 @@ def plot_group1_data_with_specific_function(kind, cses_data_paths, function_type
             st.plotly_chart(fig_combined)
             st.plotly_chart(fig_combined2)
 
-
-
-        elif function_type=="SCM":
+        elif function_type == "SCM":
             try:
-                fig1, fig2 = plot_SCM(cses_data_path, True)  # Assuming plot_EFD returns fig1 and fig2
+                fig1, fig2 = plot_SCM(cses_data_path, True)  # Assuming plot_SCM returns fig1 and fig2
                 all_fig1.append(fig1)
                 all_fig1.append(group1_data_plot)
                 all_fig2.append(fig2)
                 all_fig2.append(group1_data_plot)
             except Exception as e:
                 st.error(f"Error processing {cses_data_path}: {str(e)}")
+
             fig_combined = make_subplots(rows=1, cols=1, shared_xaxes=True, vertical_spacing=0.1)
             fig_combined2 = make_subplots(rows=1, cols=1, shared_xaxes=True, vertical_spacing=0.1)
             for fig1 in all_fig1:
-                for trace in fig1.data:
+                for trace in fig1.data:  # Ensure trace is correctly accessed
                     fig_combined.add_trace(trace, row=1, col=1)
-    
+
             for fig2 in all_fig2:
-                for trace in fig2.data:
+                for trace in fig2.data:  # Ensure trace is correctly accessed
                     fig_combined2.add_trace(trace, row=1, col=1)
 
             fig_combined.update_layout(height=600, title_text="Combined SCM Plots")
@@ -445,49 +447,46 @@ def plot_group1_data_with_specific_function(kind, cses_data_paths, function_type
             st.plotly_chart(fig_combined)
             st.plotly_chart(fig_combined2)
 
-        elif function_type=="HEPPL":
+        elif function_type == "HEPPL":
             try:
-                fig = plot_proton_electron_count_utc(cses_data_path, True) 
+                fig = plot_proton_electron_count_utc(cses_data_path, True)
                 all_fig.append(fig)
                 all_fig.append(group1_data_plot)
             except Exception as e:
                 st.error(f"Error processing {cses_data_path}: {str(e)}")
-            
+
             fig_combined = make_subplots(rows=1, cols=1, shared_xaxes=True, vertical_spacing=0.1, specs=[[{"secondary_y": True}]])
             for fig1 in all_fig:
-                for trace in fig.data:
+                for trace in fig1.data:  # Ensure trace is correctly accessed
                     fig_combined.add_trace(trace, row=1, col=1)
-    
-            
 
             fig_combined.update_layout(height=600, title_text="Combined HEPPL Plots")
             st.write("plotting")
             st.plotly_chart(fig_combined)
-        
-        elif function_type=="HEPPX":
+
+        elif function_type == "HEPPX":
             try:
-                fig = plot_xray_count_utc_time(cses_data_path, True) 
+                fig = plot_xray_count_utc_time(cses_data_path, True)
                 all_fig.append(fig)
                 all_fig.append(group1_data_plot)
             except Exception as e:
                 st.error(f"Error processing {cses_data_path}: {str(e)}")
-            
+
             fig_combined = make_subplots(rows=1, cols=1, shared_xaxes=True, vertical_spacing=0.1, specs=[[{"secondary_y": True}]])
             for fig1 in all_fig:
-                for trace in fig.data:
+                for trace in fig1.data:  # Ensure trace is correctly accessed
                     fig_combined.add_trace(trace, row=1, col=1)
-    
-            
 
             fig_combined.update_layout(height=600, title_text="Combined HEPPL Plots")
             st.write("plotting")
             st.plotly_chart(fig_combined)
-        
-        elif function_type=="LAP":
+
+        elif function_type == "LAP":
             st.write("working on function")
-        
-        elif function_type=="HEPPH":
+
+        elif function_type == "HEPPH":
             st.write("working on function")
-        
-        elif function_type=="HEPPD":
+
+        elif function_type == "HEPPD":
             st.write("working on function")
+
