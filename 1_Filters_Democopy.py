@@ -9,7 +9,6 @@ from scipy.stats import skew, kurtosis, t
 import streamlit as st
 from streamlit_folium import st_folium
 import datetime
-from functions import search_files
 st.markdown("# Plotting Demo")
 st.sidebar.header("Plotting Demo")
 

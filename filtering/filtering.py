@@ -16,6 +16,7 @@ from settings import DATA_DIR
 from shapely.geometry import LineString, MultiPolygon, Point, Polygon, box
 from tqdm import tqdm
 
+
 payloads_metadata = gpd.read_file("./filtering/payloads_metadata.gpkg")
 ORBIT_GEOMETRY_DF = payloads_metadata.drop_duplicates("semiorbit_nr").drop(
     columns=["file_name"]
@@ -24,12 +25,10 @@ ORBIT_FILENAME_DF = payloads_metadata[["file_name", "semiorbit_nr", "payload"]]
 del payloads_metadata
 
 
-def semiorbits_payload_filter():
-    payload_filtered_files = filtered_files_df[filtered_files_df["payload"] == payload][
-        "filepath"
-    ]
-
-    ORBIT_FILENAME_DF["payload"] = ORBIT_FILENAME_DF["payload"].str.replace(" ", "_")
+def semiorbits_payload_filter(payload:str, searchbar:str):
+    df = st.session_state.filtered_files
+    payload_filtered_files = df[(df["payload"] == payload)][(df["semiorbit_nr"] == searchbar)].filepath
+    return payload_filtered_files
 
 
 def semiorbits_filter(

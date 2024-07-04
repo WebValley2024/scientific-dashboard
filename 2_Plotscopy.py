@@ -3,6 +3,7 @@ import plotly as plt
 import plotly.graph_objects as go
 import streamlit as st
 import xarray as xr
+from settings import DATA_DIR
 from filtering.filtering import (
     ascending_descending_filter,
     get_filenames_from_orbits,
@@ -10,14 +11,13 @@ from filtering.filtering import (
     payload_filter,
     return_coordinates,
     semiorbits_filter,
+    semiorbits_payload_filter,
 )
-from functions import (
+
+from plotting.functions.averaging import (
+    plot_med_quantile,
     add_stats_trace,
     get_med_quantile,
-    orbit_selector,
-    plot_med_quantile,
-    plot_twin_timeline_verse_time,
-    plotA311,
 )
 
 from plotly.subplots import make_subplots
@@ -58,7 +58,7 @@ filtered_files_df["filepath"] = filtered_files_df.apply(
 
 # at this point filtered_files_df is a dataframe with the following columns:
 # file_name, semiorbit_nr, payload, filepath
-st.session_state.filtered_files = filtered_files_df.filepath
+st.session_state.filtered_files = filtered_files_df
 
 if filtered_files_df.empty:
     st.warning("No files founded", icon="⚠️")
@@ -105,6 +105,9 @@ search_bar = st.text_input(
 
 
 
+search_bar_files = semiorbits_payload_filter(payload, search_bar)
+
+over_plot_file = st.selectbox("", search_bar_files, format_func=lambda filepath: os.path.basename(filepath))
 
 st.divider()
 
@@ -147,10 +150,10 @@ for sensor in sensors:
     plotting_stuff.append(get_med_quantile(filelist, sensor))
 
 plots = []
+
 for i in range(len(sensors)):
-    plots.append(
-        st.plotly_chart(plot_med_quantile(plotting_stuff[i], lat, data_list[i]))
-    )
+    st.plotly_chart(plot_med_quantile(plotting_stuff[i], lat, data_list[i]))
+    
 
 
 payload_avg_functions = {
@@ -166,9 +169,11 @@ payload_avg_functions = {
     "HEPP_X": {"XrayRate": plot_XrayRate_LAT_X},
 }
 
-for idx, s in enumerate(sensor):
-    fig = go.Figure()
-    func = payload_avg_functions[payload][s]
-    fig_1 = func(fig, "/home/grp2/nicola-largher/bla/7DATI1/" + selected_files)
-    fig_1 = add_stats_trace(plotting_stuff[idx], fig_1, median_name="Median")
-    st.plotly_chart(fig_1)
+if over_plot_file:
+    for idx, s in enumerate(sensors):
+        fig = go.Figure()
+        st.write(sensor)
+        func = payload_avg_functions[payload][s]
+        fig_1 = func(fig, os.path.join(DATA_DIR, over_plot_file))
+        fig_1 = add_stats_trace(plotting_stuff[idx], fig_1, median_name="Median")
+        st.plotly_chart(fig_1)
