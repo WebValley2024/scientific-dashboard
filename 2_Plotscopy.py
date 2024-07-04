@@ -69,7 +69,7 @@ if filtered_files_df.empty:
 payload = st.selectbox(
     "Instrument Type",
     ("EFD_ULF", "SCM", "LAP", "HEPP_L", "HEPP_H", "HEPD" "HEPP_X"),
-    index=0,
+    index=2,
 )
 
 sensors_multi_select = {
@@ -171,9 +171,10 @@ payload_avg_functions = {
 
 if over_plot_file:
     for idx, s in enumerate(sensors):
+        #fig = make_subplots(specs=[[{"secondary_y": True}]])
         fig = go.Figure()
         st.write(sensor)
         func = payload_avg_functions[payload][s]
         fig_1 = func(fig, os.path.join(DATA_DIR, over_plot_file))
-        fig_1 = add_stats_trace(plotting_stuff[idx], fig_1, median_name="Median")
+        #fig_1 = add_stats_trace(plotting_stuff[idx], fig_1, median_name="Median")
         st.plotly_chart(fig_1)
