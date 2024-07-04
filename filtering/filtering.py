@@ -89,6 +89,7 @@ def dataset(path):
     except Exception as e:
         ds = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
         return ds
+      
 
 def file_selector():
     folder_path = DATA_DIR
@@ -144,8 +145,6 @@ def return_coordinates(st_map):
     else:
         st.write("No 'last_active_drawing' found in st_map.")
     
-    return
-
 # def wrap_coordinates_list(coordinate_list):
 #     """
 #     Wraps a list of latitude and longitude coordinates to keep them within valid ranges.
@@ -186,8 +185,6 @@ def return_coordinates(st_map):
 
 
 
-
-
 def polygon(points, files):
     intersectionFile = []
     latitudes = [point[1] for point in points]
@@ -219,7 +216,6 @@ def polygon(points, files):
 def ascending_descending_filter(files_path, asc_des):
     ascending = []
     descending = []
-
     for file in files_path:
         if int(extract_orbit(file)) % 2 == 0:
             descending.append(file)
@@ -230,7 +226,6 @@ def ascending_descending_filter(files_path, asc_des):
     else:
         return descending
 
-      
 def date_interval_filter(files_path, start_date_selector, end_date_selector):
     files_list = []
     for file in files_path:
@@ -244,22 +239,22 @@ def payload_filter2(payload):
     return os.listdir(os.path.join(DATA_DIR, payload))
 
 
+
 def payload_filter(file_paths, payload):
     paths = []
     for file_path in file_paths:
-        split = file_path.split("/")
-        split = split[-1].split("_")
-        split = split[2] + "_" + split[3]
+        split = file_path.split('/')
+        split = split[-1].split('_')
+        split = split[2] + '_' + split[3]
         if split == payload:
             paths.append(file_path)
-
+        
     return paths
-
 
 def orbit_filter(file_paths, orbit):
     paths = []
     for file_path in file_paths:
         if extract_orbit(file_path) == orbit:
             paths.append(file_path)
-    return paths
 
+    return paths

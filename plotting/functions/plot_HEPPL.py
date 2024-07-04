@@ -14,6 +14,7 @@ from plotting.functions.reducefreq import reduce_frequency
 #all these methods take path to a zarr-File!!
 #TODO: both plot-against-time-methods do seperate scales for protons and electrons. 
 # do we want it that way??
+
 def plot_electron_LAT_L(fig, path):
     f = xr.open_zarr(path)
     verse_time = f.GEO_LAT

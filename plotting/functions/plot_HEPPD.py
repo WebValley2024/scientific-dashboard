@@ -9,6 +9,8 @@ import xarray as xr
 import plotly.express as px
 import plotly.io as pio
 import geopandas as gpd
+
+
 def plot_electron_LAT_D(fig, path):
     f = xr.open_zarr(path)
     LonLat = f['LonLat']
@@ -134,7 +136,6 @@ def plot_proton_LAT_D(fig, path):
         height=600,
     )
     return fig
-
 
 
 def plot_proton_electron_count_utc(path):

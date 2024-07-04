@@ -516,7 +516,6 @@ def orbit_number(filename):
     return number
 
 
-
 def plot_A231_W(fig, path):
     # Open the dataset using the h5netcdf engine
     try:
@@ -683,5 +682,3 @@ def plot_A233_W(fig, path):
     fig.update_xaxes(title_text="Latitude")
 
     return fig
-
-

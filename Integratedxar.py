@@ -23,6 +23,8 @@ import logging
 from plotting.functions.plot_EFD import plot_EFD
 from plotting.functions.plot_LAP import lap_plot
 from plotting.functions.plot_HEPPX import heppx_plot
+
+from plotting.functions.plot_HEPPL import plot_hepl
 from plotting.functions.plot_SCM import scmplot
 from plotting.functions.plot_HEPPH import plotheph
 from plotting.functions.plot_HEPPD import plot_HEPD
@@ -108,7 +110,7 @@ def plotting_selector(intersection_files, coordinates):
                     elif dataset_type == 'HEP_4' == sensors:
                         heppx_plot(file_path)
                     elif dataset_type == 'HEP_1' == sensors:
-                        st.write("working on function")
+                        plot_hepl(file_path)
                     elif dataset_type == 'SCM' == sensors:
                         scmplot(file_path)
                     elif dataset_type == 'HEP_2' == sensors:
