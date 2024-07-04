@@ -650,5 +650,5 @@ plotting_module.plot_proton_electron_count_verse_time(path, multiple=False)
 ```
 ### Notes
 - Ensure the data files are accessible and correctly formatted (Zarr or NetCDF).
-- Adjust the frequency reduction parameter in reduce_frequency as needed for your data.
+- Adjust the frequency reduction parameter in reduce_frequency as needed for your data. A parameter of one corresponds to one measurement per second, a parameter two to two measurements per second, and so on.
 - The module assumes specific variable names in the datasets (‘A231_W’, ‘A232_W’, ‘A233_W’, etc.). Modify the code if your dataset uses different naming conventions.
