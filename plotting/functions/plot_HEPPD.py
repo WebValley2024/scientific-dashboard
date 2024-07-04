@@ -9,6 +9,135 @@ import xarray as xr
 import plotly.express as px
 import plotly.io as pio
 import geopandas as gpd
+
+
+def plot_electron_LAT_D(fig, path):
+    f = xr.open_zarr(path)
+    LonLat = f['LonLat']
+ 
+    if LonLat.ndim == 3:
+        longitude = LonLat[0, 0, :]
+        latitude = LonLat[0, 0, :]
+    elif LonLat.ndim == 2:
+        longitude = LonLat[:, 0]
+        latitude = LonLat[:, 1]
+    else:
+        raise ValueError("Unexpected LonLat dimensions")
+ 
+    verse_time = f.latitude
+    try:
+        data2 = f.HEPD_ele_counts
+    except:
+        data2 = f.HEPD_Ele_counts
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data2 = data2.values[50:].flatten()
+
+    # Do the same with the verse time
+    verse_time = verse_time.values[50:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+    # Plot everything
+    # Create extended time array to match the frequency
+    freq = data2.shape[0] // len_time  # Assuming data and verse_time have compatible lengths
+    vers_extend = np.concatenate([np.linspace(verse_time[i], verse_time[i+1], freq, endpoint=False) for i in range(len_time-1)])
+    vers_extend = np.concatenate([vers_extend, np.linspace(verse_time[-2], verse_time[-1], freq)])
+
+
+
+    # Add trace for Count_electron (data)
+
+
+    # Add trace for Count_proton (data2) on the secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=vers_extend, y=data2, name="Electron Count", line=dict(color='red')),
+        secondary_y=False
+    )
+
+    # Configure y-axes
+    fig.update_yaxes(title_text="Electron Count", secondary_y=False)
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="Latitude")
+
+    # Configure layout
+    fig.update_layout(
+        title="Electron Counts over LAT",
+        template="plotly_white",
+        autosize=False,
+        width=800,
+        height=600,
+    )
+
+    return fig
+
+
+
+
+def plot_proton_LAT_D(fig, path):
+    f = xr.open_zarr(path)
+    LonLat = f['LonLat']
+ 
+    if LonLat.ndim == 3:
+        longitude = LonLat[0, 0, :]
+        latitude = LonLat[0, 0, :]
+    elif LonLat.ndim == 2:
+        longitude = LonLat[:, 0]
+        latitude = LonLat[:, 1]
+    else:
+        raise ValueError("Unexpected LonLat dimensions")
+ 
+    verse_time = latitude
+    try:
+        data2 = f.HEPD_pro_counts
+    except:
+        data2 = f.HEPD_Pro_counts
+
+    # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
+    data2 = data2.values[50:].flatten()
+
+    # Do the same with the verse time
+    verse_time = verse_time.values[50:].flatten()
+
+    # Get the length to be able to plot it
+    len_time = len(verse_time)
+
+    # Plot everything
+    # Create extended time array to match the frequency
+    freq = data2.shape[0] // len_time  # Assuming data and verse_time have compatible lengths
+    vers_extend = np.concatenate([np.linspace(verse_time[i], verse_time[i+1], freq, endpoint=False) for i in range(len_time-1)])
+    vers_extend = np.concatenate([vers_extend, np.linspace(verse_time[-2], verse_time[-1], freq)])
+
+
+
+    # Add trace for Count_electron (data)
+
+
+    # Add trace for Count_proton (data2) on the secondary y-axis
+    fig.add_trace(
+        go.Scatter(x=vers_extend, y=data2, name="Proton Count", line=dict(color='red')),
+        secondary_y=False
+    )
+
+    # Configure y-axes
+    fig.update_yaxes(title_text="Proton Count", secondary_y=False)
+
+    # Configure x-axis
+    fig.update_xaxes(title_text="Latitude")
+
+    # Configure layout
+    fig.update_layout(
+        title="Proton Counts over LAT",
+        template="plotly_white",
+        autosize=False,
+        width=800,
+        height=600,
+    )
+    return fig
+
+
 def plot_proton_electron_count_utc(path):
     if not path:
         return
