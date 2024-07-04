@@ -5,10 +5,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 import re
 import xarray as xr
-from plot_EFD import plot_EFD
-from plot_SCM import plot_SCM
-from plot_HEPPL import plot_proton_electron_count_utc
-from plot_HEPPX import plot_xray_count_utc_time
+from plotting.functions.plot_EFD import plot_EFD
+from plotting.functions.plot_SCM import plot_SCM
+from plotting.functions.plot_HEPPL import plot_proton_electron_count_utc
+from plotting.functions.plot_HEPPX import plot_xray_count_utc_time
 import streamlit as st
 from plotly.subplots import make_subplots
 # Make a GET request to the specified URL
@@ -28,7 +28,7 @@ def get_catalogue_data(kind, start_date: str, stop_date: str):
     if kind not in ("earthquake", "grb", "tgf", "gms", "swe"):
         print("kind is not in a recognized format, if you empty data, check its value")
 
-    url = f"http://192.168.90.183:8000/spadeapp/{kind}_json/?start={start_date}&end={stop_date}"
+    url = f"http://100.89.72.89:8000/spadeapp/{kind}_json/?start={start_date}&end={stop_date}"
     response = requests.get(url)
 
     # Check if the request was successful
@@ -405,11 +405,11 @@ def plot_group1_data_with_specific_function(kind, cses_data_paths, function_type
             fig_combined = make_subplots(rows=1, cols=1, shared_xaxes=True, vertical_spacing=0.1)
             fig_combined2 = make_subplots(rows=1, cols=1, shared_xaxes=True, vertical_spacing=0.1)
             for fig1 in all_fig1:
-                for trace in fig1.data:
+                for trace in fig1:
                     fig_combined.add_trace(trace, row=1, col=1)
     
             for fig2 in all_fig2:
-                for trace in fig2.data:
+                for trace in fig2:
                     fig_combined2.add_trace(trace, row=1, col=1)
 
             fig_combined.update_layout(height=600, title_text="Combined EFD Plots")

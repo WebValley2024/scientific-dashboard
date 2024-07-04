@@ -20,7 +20,7 @@ from streamlit_folium import st_folium
 from multiprocessing import Pool
 
 import time
-
+from plotting.functions.plot_group1data import plot_group1_data_with_specific_function
 from plotting.functions.plot_EFD import plot_EFD
 from plotting.functions.plot_EFD import aggregate_EFD_angles
 from plotting.functions.plot_EFD import aggregate_EFD_waveform
@@ -268,6 +268,7 @@ def draw_map():
                             elif dataset_type == 'HEP_DDD' and sensor == 'HEP_DDD':
                                 hep3_files.append(file_path)
 
+                        
 
                     if(len(scm_files) > 1):
                         for i in range(3):
@@ -281,6 +282,7 @@ def draw_map():
 
 
                     if(len(efd_files) > 1):
+                        plot_group1_data_with_specific_function("earthquake", efd_files, "EFD")
                         for i in range(3):
                             args.append((efd_files, 'EFD', i))
                         # paralleltest(efd_files)
