@@ -34,7 +34,7 @@ def plot_XrayRate_LAT_X(fig, path):
     # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
     data = data.values[1:].flatten()
     # Remove the first element of the latitude and flatten it
-    latitude = latitude.values[1:]
+    latitude = latitude.values[1:].flatten()
 
     # Get the length to be able to plot it
     len_lat = len(latitude)

@@ -171,10 +171,9 @@ payload_avg_functions = {
 
 if over_plot_file:
     for idx, s in enumerate(sensors):
-        #fig = make_subplots(specs=[[{"secondary_y": True}]])
-        fig = go.Figure()
+        fig = make_subplots(specs=[[{"secondary_y": True}]])
         st.write(sensor)
         func = payload_avg_functions[payload][s]
         fig_1 = func(fig, os.path.join(DATA_DIR, over_plot_file))
-        #fig_1 = add_stats_trace(plotting_stuff[idx], fig_1, median_name="Median")
+        fig_1 = add_stats_trace(plotting_stuff[idx], fig_1, median_name="Median")
         st.plotly_chart(fig_1)
