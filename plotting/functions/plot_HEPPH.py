@@ -855,8 +855,10 @@ def aggregated_HEPPH_electron_proton(files, count_type='electron'):
         yaxis_title=y_axis_title,
         template="plotly_white"
     )
+
+    return fig
  
-    st.plotly_chart(fig)
+    # st.plotly_chart(fig)
 
 
 def orbit_number(filename):

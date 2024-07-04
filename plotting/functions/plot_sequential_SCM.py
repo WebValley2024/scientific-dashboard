@@ -45,7 +45,7 @@ def plot_sequential_SCM(paths):
     fig_combined2.update_traces(selector=dict(name='Polar Angle'), line=dict(color='green'))
 
     # Plot using Streamlit
-    return fig_combined1
+    return fig_combined1, fig_combined2
     st.plotly_chart(fig_combined1)
     st.plotly_chart(fig_combined2)
 

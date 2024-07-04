@@ -44,6 +44,7 @@ def plot_sequential_EFD(paths):
     fig_combined2.update_traces(selector=dict(name='Polar Angle'), marker=dict(color='green'))
     # Plot using Streamlit
     st.write("plotting")
-    st.plotly_chart(fig_combined)
-    st.plotly_chart(fig_combined2)
+    return fig_combined, fig_combined2
+    # st.plotly_chart(fig_combined)
+    # st.plotly_chart(fig_combined2)
 

@@ -265,8 +265,9 @@ def aggregate_EFD_angles(files, angle_type='polar'):
         yaxis_title=y_axis_title,
         template="plotly_white"
     )
+    return fig
  
-    st.plotly_chart(fig)
+    # st.plotly_chart(fig)
 
 def aggregate_EFD_waveform(files, waveform_type='X'):
     fig = go.Figure()
@@ -315,8 +316,8 @@ def aggregate_EFD_waveform(files, waveform_type='X'):
         yaxis_title=y_axis_title,
         template="plotly_white"
     )
- 
-    st.plotly_chart(fig)
+    return fig
+    # st.plotly_chart(fig)
 
 
 

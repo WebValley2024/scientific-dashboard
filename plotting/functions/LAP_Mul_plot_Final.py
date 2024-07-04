@@ -136,4 +136,5 @@ def plot_sequential_LAP(f_paths):
     
     # Adjust layout and display the plot
     fig.update_layout(height=800, width=1200, title_text="Electron Density and Temperature")
-    st.plotly_chart(fig)
+    return fig
+    # st.plotly_chart(fig)

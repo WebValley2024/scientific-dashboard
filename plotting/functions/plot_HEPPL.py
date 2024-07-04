@@ -861,8 +861,9 @@ def aggregated_HEPPL_electron_proton(files, count_type='electron'):
         yaxis_title=y_axis_title,
         template="plotly_white"
     )
- 
-    st.plotly_chart(fig)
+
+    return fig
+    # st.plotly_chart(fig)
  
 
 def plot_hepl(path):

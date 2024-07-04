@@ -19,36 +19,46 @@ import streamlit as st
 from streamlit_folium import st_folium
 from multiprocessing import Pool
 
+import time
+
 from plotting.functions.plot_EFD import plot_EFD
 from plotting.functions.plot_EFD import aggregate_EFD_angles
 from plotting.functions.plot_EFD import aggregate_EFD_waveform
+from plotting.functions.plot_sequential_EFD import plot_sequential_EFD
 # from plotting.functions.plot_EFD_merged import plot_EFD
+
 from plotting.functions.plot_LAP import lap_plot
 from plotting.functions.plot_LAP import aggregated_LAP_electron
-from plotting.functions.plot_HEPPX import heppx_plot
+from plotting.functions.LAP_Mul_plot_Final import plot_sequential_LAP
+
 from plotting.functions.plot_SCM import scmplot
 from plotting.functions.plot_SCM import aggregated_SCM_angles
 from plotting.functions.plot_SCM import aggregated_SCM_waveform
 from plotting.functions.plot_sequential_SCM import plot_sequential_SCM
-from plotting.functions.plot_sequential_EFD import plot_sequential_EFD
+
+from plotting.functions.plot_HEPPL import plot_hepl
 from plotting.functions.plot_sequential_HEPPL import plot_sequential_HEPPL
-from plotting.functions.plot_sequential_HEPPX import plot_sequential_HEPPX
-from plotting.functions.plot_HEPPX import aggregated_HEPPX_xray
-from plotting.functions.HEPPH_MUL_plot import plot_sequential_HEPPH
-from plotting.functions.HEPD_V2_fixed import plot_HEPPD
-from plotting.functions.HEPPD_Mul_plot import plot_HEPD_multiple_files
-from plotting.functions.LAP_Mul_plot_Final import plot_sequential_LAP
-# from plotting.functions.HEPPL_Mul_plot import plosequential_HEPPL
-# from plotting.functions.plot_sequential_HEPPL import plot_proton_electron_count_verse_time
 from plotting.functions.plot_HEPPL import aggregated_HEPPL_electron_proton
+
 from plotting.functions.plot_HEPPH import plotheph
 from plotting.functions.plot_HEPPH import aggregated_HEPPH_electron_proton
+from plotting.functions.HEPPH_MUL_plot import plot_sequential_HEPPH
+
+from plotting.functions.HEPD_V2_fixed import plot_HEPPD
+from plotting.functions.HEPPD_Mul_plot import plot_HEPD_multiple_files
 from plotting.functions.plot_HEPPD import plot_HEPD
 from plotting.functions.plot_HEPPD import aggregate_HEPPD_electron_proton
-from plotting.functions.plot_HEPPL import plot_hepl
+
+from plotting.functions.plot_HEPPX import heppx_plot
+from plotting.functions.plot_sequential_HEPPX import plot_sequential_HEPPX
+from plotting.functions.plot_HEPPX import aggregated_HEPPX_xray
+
+# from plotting.functions.HEPPL_Mul_plot import plosequential_HEPPL
+# from plotting.functions.plot_sequential_HEPPL import plot_proton_electron_count_verse_time
+
 
 #REPLACE
-folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/concaat/'
+folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/concat'
 
 def dataset(path):
     try:
@@ -183,14 +193,20 @@ def draw_map():
             coords = coords[:-1]
 
             #call function and pass coords and file path
-            pathskidibidi = polygon(coords, file_selector())
+            allfiles = file_selector()
+            st.write(allfiles)
+            pathskidibidi = check_Date_interval(allfiles,start_date,end_date)
 
-            pathskidibidi = check_Date_interval(pathskidibidi,start_date,end_date)
+            st.write("dates filtered")
+            st.write(pathskidibidi)
+
+            pathskidibidi = polygon(coords, pathskidibidi)
+
 
             dataset_type = extract_dataset_type(pathskidibidi)
             print(dataset_type)
-            # st.write("ajdnajdkansjkdna")
-            # st.write(dataset_type)
+            st.write("ajdnajdkansjkdna")
+            st.write(dataset_type)
 
             option = st.multiselect(
                 "Instrument Type",
@@ -229,6 +245,7 @@ def draw_map():
                     scm_files = []
                     hep2_files = []
                     hep3_files = []
+                    args = []
 
                     # Populate arrays based on selected datasets and sensors
                     for dataset in dataset_type:
@@ -251,83 +268,101 @@ def draw_map():
                             elif dataset_type == 'HEP_DDD' and sensor == 'HEP_DDD':
                                 hep3_files.append(file_path)
 
-                    if(len(scm_files) > 1):
-                        plot_sequential_SCM(scm_files)
-                        aggregated_SCM_angles(scm_files)
-                        aggregated_SCM_waveform(scm_files)
-                    elif(len(scm_files)==1):
-                        scmplot(scm_files)
 
+                    if(len(scm_files) > 1):
+                        for i in range(3):
+                            args.append((scm_files, 'SCM', i))
+                        # plot_sequential_SCM(scm_files)
+                        # aggregated_SCM_angles(scm_files)
+                        # aggregated_SCM_waveform(scm_files)
+                    elif(len(scm_files)==1):
+                        args.append((scm_files, 'SCM_s', 0))
+                        # scmplot(scm_files)
 
 
                     if(len(efd_files) > 1):
-                        plot_sequential_EFD(efd_files)
-                        aggregate_EFD_angles(efd_files)
-                        aggregate_EFD_waveform(efd_files)
+                        for i in range(3):
+                            args.append((efd_files, 'EFD', i))
+                        # paralleltest(efd_files)
+                        # plot_sequential_EFD(efd_files)
+                        # aggregate_EFD_angles(efd_files)
+                        # aggregate_EFD_waveform(efd_files)
                     elif(len(efd_files)==1):
-                        plot_EFD(efd_files, False)
+                        args.append((efd_files[0], 'EFD_s', 0))
+
+                        # plot_EFD(efd_files, False)
+
+
 
                     if(len(lap_files) > 1):
-                        plot_sequential_LAP(lap_files)
-                        aggregated_LAP_electron(lap_files)
+                        for i in range(2):
+                            args.append((lap_files, 'LAP', i))
+                        # plot_sequential_LAP(lap_files)
+                        # aggregated_LAP_electron(lap_files)
                     elif(len(lap_files)==1):
-                        lap_plot(lap_files[0])
+                        args.append((lap_files[0], 'LAP_s', 0))
+                        # lap_plot(lap_files[0])
+
+
+
 
                     if(len(hep1_files) > 1):
+                        for i in range(2):
+                            args.append((hep1_files, 'HEPL', i))
                         # plot_proton_electron_count_verse_time(hep1_files[0], False)
-                        plot_sequential_HEPPL(hep1_files)
-                        aggregated_HEPPL_electron_proton(hep1_files)
+                        # plot_sequential_HEPPL(hep1_files)
+                        # aggregated_HEPPL_electron_proton(hep1_files)
                     elif(len(hep1_files)==1):
-                        plot_hepl(hep1_files, False)
+                        args.append((hep1_files[0], 'HEPL_s', 0))
+                        # plot_hepl(hep1_files, False)
+
+
+
 
                     if(len(hep2_files) > 1):
-                        plot_sequential_HEPPH(hep2_files)
-                        aggregated_HEPPH_electron_proton(hep2_files)
+                        for i in range(2):
+                            args.append((hep2_files, 'HEPH', i))
+                        # plot_sequential_HEPPH(hep2_files)
+                        # aggregated_HEPPH_electron_proton(hep2_files)
                     elif(len(hep2_files)==1):
-                        plotheph(hep2_files[0])
+                        args.append((hep2_files[0], 'HEPH_s', 0))
+                        # plotheph(hep2_files[0])
+
+
 
                     #FIX HEP_DDD (john)
                     if(len(hep3_files) > 1):
-                        plot_HEPD_multiple_files(hep3_files)
-                        aggregate_HEPPD_electron_proton(hep3_files)
+                        for i in range(2):
+                            args.append((hep3_files, 'HEPD', i))
+                        # plot_HEPD_multiple_files(hep3_files)
+                        # aggregate_HEPPD_electron_proton(hep3_files)
                     elif(len(hep3_files)==1):
-                        plot_HEPD(hep3_files[0])
+                        args.append((hep3_files[0], 'HEPD', 0))
+                        # plot_HEPD(hep3_files[0])
+
+
 
                     if(len(hep4_files) > 1):
-                        plot_sequential_HEPPX(hep4_files)
-                        aggregated_HEPPX_xray(hep4_files)
+                        for i in range(2):
+                            args.append((hep4_files, 'HEPX', i))
+                        # plot_sequential_HEPPX(hep4_files)
+                        # aggregated_HEPPX_xray(hep4_files)
                         # plot_HEPD_multiple_files(hep3_files)
                     elif(len(hep4_files)==1):
-                        heppx_plot(hep4_files[0])
+                        args.append((hep4_files[0], 'HEPX', 0))
+                        # heppx_plot(hep4_files[0])
 
-
-
-
-
-                    # if(len(efd_files) > 1):
-                    #     plot_sequential_EFD(efd_files)
-                    # else:
-                    #     plot_EFD(efd_files, False)
-
-                    # scmplot(scm_files)
-
-
-                    # for file_path in efd_files:
-                    #     plot_EFD(efd_files)
-                    # for file_path in lap_files:
-                    #     st.write('lap')
-                    #     lap_plot(file_path)
-                    # for file_path in hep4_files:
-                    #     st.write('hep4')
-                    #     heppx_plot(file_path)
-                    # for file_path in hep1_files:
-                    #     st.write("working on function")  # Placeholder for HEP_1 plotting function
-                    # for file_path in scm_files:
-                    #     st.write('scm')
-                    #     scmplot(file_path)
-                    # for file_path in hep2_files:
-                    #     st.write("test")  # Placeholder for HEP_2 plotting function
-
+                st.write(time.time())
+                with Pool(8) as p:
+                    for fig in p.starmap(paralleltest, args):
+                        st.write(time.time())
+                        if isinstance(fig, tuple):
+                            st.write(time.time())
+                            for f in fig:
+                                st.plotly_chart(f)
+                        else:
+                            st.plotly_chart(fig)
+                st.write(time.time())
                 min_lat, max_lat = calculate_extremes(coordinates)
                 st.write(f"Leftmost Latitude: {min_lat:.6f}")
                 st.write(f"Rightmost Latitude: {max_lat:.6f}")
@@ -490,40 +525,65 @@ def extract_dataset_type(file_paths):
             dataset_types.append([file_path, 'HEP_2'])
         elif 'HEP_DDD' in file_name:
             dataset_types.append([file_path, 'HEP_DDD'])
-
         else:
             raise ValueError(f"Unknown dataset type in file name: {file_name}")
-    
     return dataset_types
 
-
-def file_selector(folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/concat/'):
+def file_selector(folder_path = '/home/grp2/dhruva-sharma/scientific-dashboard/webappfiles/data/concat'):
     filenames = os.listdir(folder_path)
-    file_paths = [os.path.join(folder_path, filename) for filename in filenames]    
+    file_paths = [os.path.join(folder_path, filename) for filename in filenames]
+    st.write("files selected")
     return file_paths
 
-# def paralleltest(file_path, type):
-#     if(type == 1):
-#         aggregate_EFD_angles(file_path)
-#     elif(type == 2):
-#         aggregate_EFD_waveform(file_path)
-#     elif(type == 3):
-#         plot_sequential_EFD(file_path)
-
-def paralleltest(args):
-    file_path, type = args
-    st.write(type)
-    if type == 1:
-        aggregate_EFD_angles(file_path)
-    elif type == 2:
-        aggregate_EFD_waveform(file_path)
-    elif type == 3:
-        plot_sequential_EFD(file_path)
-
-
-# Main function
+def paralleltest(file_path, sensor, i):
+    if sensor == 'EFD':
+        st.write("efd")
+        if(i == 0):
+            return aggregate_EFD_angles(file_path)
+        elif(i == 1):
+            return aggregate_EFD_waveform(file_path)
+        elif(i == 2):
+            return plot_sequential_EFD(file_path)
+    elif sensor == "SCM":
+        st.write("scm")
+        if(i == 0):
+            return plot_sequential_SCM(file_path)
+        elif(i == 1):
+            return aggregated_SCM_angles(file_path)
+        elif(i == 2):
+            return aggregated_SCM_waveform(file_path)
+    elif sensor == "LAP":
+        st.write("scm")
+        if(i == 0):
+            return plot_sequential_LAP(file_path)
+        elif(i == 1):
+            return aggregated_LAP_electron(file_path)
+    elif sensor == "HEPL":
+        st.write("hepl")
+        if(i == 0):
+            return plot_sequential_HEPPL(file_path)
+        elif(i == 1):
+            return aggregated_HEPPL_electron_proton(file_path)
+    elif sensor == "HEPH":
+        st.write("heph")
+        if(i == 0):
+            return plot_sequential_HEPPH(file_path)
+        elif(i == 1):
+            return aggregated_HEPPH_electron_proton(file_path)
+    elif sensor == "HEPD":
+        st.write("hepd")
+        if(i == 0):
+            return plot_HEPD_multiple_files(file_path)
+        elif(i == 1):
+            return aggregate_HEPPD_electron_proton(file_path)
+    elif sensor == "HEPX":
+        if(i == 0):
+            return plot_sequential_HEPPX(file_path)
+        elif(i == 1):
+            return aggregated_HEPPX_xray(file_path)
+                
+# Main function 
 def main():
-    st.set_page_config(layout="wide")
     st.title("Map Drawing and Statistical Analysis Tool")
     draw_map()
     # statistical_analysis()

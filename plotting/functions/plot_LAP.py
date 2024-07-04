@@ -332,8 +332,10 @@ def aggregated_LAP_electron(files, variable='A311'):
         yaxis_title=y_axis_title,
         template="plotly_white"
     )
+
+    return fig
  
-    st.plotly_chart(fig)
+    # st.plotly_chart(fig)
 
 
 def orbit_number(filename):

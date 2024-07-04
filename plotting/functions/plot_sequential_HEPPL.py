@@ -75,4 +75,5 @@ def plot_sequential_HEPPL(paths):
     )
 
     # Plot using Streamlit
-    st.plotly_chart(fig_combined)
+    return fig_combined
+    # st.plotly_chart(fig_combined)

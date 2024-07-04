@@ -439,8 +439,9 @@ def aggregated_SCM_waveform(files, component='A231_W'):
         yaxis_title=y_axis_title,
         template="plotly_white"
     )
- 
-    st.plotly_chart(fig)
+
+    return fig
+    # st.plotly_chart(fig)
 
 
 def aggregated_SCM_angles(files, angle_type='polar'):
@@ -495,8 +496,9 @@ def aggregated_SCM_angles(files, angle_type='polar'):
         yaxis_title=y_axis_title,
         template="plotly_white"
     )
- 
-    st.plotly_chart(fig)
+
+    return fig
+    # st.plotly_chart(fig)
 
 
 

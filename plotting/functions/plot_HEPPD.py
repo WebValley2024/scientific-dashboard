@@ -435,7 +435,7 @@ def aggregate_HEPPD_electron_proton(files, count_type='electron'):
  
         # Plot the data
         fig.add_trace(
-            go.Scatter(x=latitude, y=count_data, mode='lines', name=file)
+            go.Scatter(x=latitude, y=count_data, mode='lines', name=str(orbit_number(file)))
         )
  
     # Configure the layout
@@ -450,8 +450,10 @@ def aggregate_HEPPD_electron_proton(files, count_type='electron'):
         yaxis_title=y_axis_title,
         template="plotly_white"
     )
+
+    return fig
  
-    st.plotly_chart(fig)
+    # st.plotly_chart(fig)
 
 def plot_HEPD(file_path):
     plot_proton_electron_count_utc(file_path)
@@ -459,3 +461,13 @@ def plot_HEPD(file_path):
     plot_proton_energy_utc(file_path)
     plot_electrons_counts_on_map(file_path)
     plot_protons_counts_on_map(file_path)
+
+
+def orbit_number(filename):
+    # Split the filename by underscores
+    parts = filename.split('_')
+    
+    # The desired number is in the 6th position (index 5)
+    number = parts[6]
+    
+    return number

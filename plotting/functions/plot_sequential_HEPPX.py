@@ -33,6 +33,7 @@ def plot_sequential_HEPPX(paths):
     fig_combined.update_traces(selector=dict(name='Xray Count'), marker=dict(color='red'))
 
     # Plot using Streamlit
-    st.plotly_chart(fig_combined)
+    return fig_combined
+    # st.plotly_chart(fig_combined)
 
 
