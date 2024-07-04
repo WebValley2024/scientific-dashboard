@@ -28,7 +28,7 @@ def get_catalogue_data(kind, start_date: str, stop_date: str):
     if kind not in ("earthquake", "grb", "tgf", "gms", "swe"):
         print("kind is not in a recognized format, if you empty data, check its value")
 
-    url = f"http://192.168.90.183:8000/spadeapp/{kind}_json/?start={start_date}&end={stop_date}"
+    url = f"http://100.89.72.89:8000/spadeapp/{kind}_json/?start={start_date}&end={stop_date}"
     response = requests.get(url)
 
     # Check if the request was successful
