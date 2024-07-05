@@ -2,15 +2,14 @@ import streamlit as st
 
 st.set_page_config(page_title="Data manager", page_icon="👁️")
 
-DATA_DIR = "/home/fbk/wv24/LAP"
+DATA_DIR = "/home/grp2/grp2/scientific-dashboard/data/processed/metadata/"
 
 
-filters = st.Page("1_Filters_Democopy1.py", title="📈_Select_Filters")
-hello = st.Page("hello1.py", title="Spectra")
-plots = st.Page("2_Plotscopy1.py", title="📊_Plot_Statistics")
-single_semiorbit = st.Page("3_Single_Semiorbit1.py", title="🛰️_Single_Semiorbit")
-multi = st.Page("multi.py", title="🛰️_Multiple_Semiorbits")
-
+filters = st.Page("1_Filters_Democopy.py", title="📈_Filter")
+hello = st.Page("hello.py", title="hello")
+plots = st.Page("2_Plotscopy.py", title="📊_Averaging")
+single_semiorbit = st.Page("3_Single_Semiorbit.py", title="🛰️_Single_Semiorbit.py")
+multi_semiorbit = st.Page("multi.py", title="🛰️_Multi_Semiorbit.py")
 
 pg = st.navigation(
     {
@@ -18,7 +17,7 @@ pg = st.navigation(
         "Tools": [filters],
         "Averaging plots": [plots],
         "Single Semiorbit": [single_semiorbit],
-        "Multiple Page": [multi],
+        "Mutliple Semiorbits": [multi_semiorbit],
     })
 
 pg.run()

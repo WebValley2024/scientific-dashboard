@@ -247,7 +247,6 @@ def plot_twin_timeline_utc(fig, path):
 
     return fig
 
-
 def plot_on_map_density(fig, path):
     try:
         f = xr.open_zarr(path)
@@ -312,8 +311,6 @@ def plot_on_map_density(fig, path):
     fig.update_layout(title="Electron Density", template="plotly_white")
 
     return fig
-
-
 def plot_on_map_temperature(fig, path):
     try:
         f = xr.open_zarr(path)
@@ -380,34 +377,29 @@ def plot_on_map_temperature(fig, path):
     return fig
 
 
+# st.plotly_chart(fig)  # Uncomment this line if using Streamlit
+
 def lap_plot(f_path):
     if not f_path:
         return
 
-    # Create a 2x2 grid for plotting
-    columns = st.columns(2)
-    
     # Plot Electron Temperature and Electron Density on the first row
-    with columns[0]:
-        fig1 = make_subplots(specs=[[{"secondary_y": True}]])
-        plot_twin_timeline_utc(fig1, f_path)
-        st.plotly_chart(fig1)
+    fig1 = make_subplots(specs=[[{"secondary_y": True}]])
+    plot_twin_timeline_utc(fig1, f_path)
+    st.plotly_chart(fig1)
 
-    with columns[1]:
-        fig2 = make_subplots(specs=[[{"secondary_y": True}]])
-        plot_twin_timeline_verse_time(fig2, f_path)
-        st.plotly_chart(fig2)
+    fig2 = make_subplots(specs=[[{"secondary_y": True}]])
+    plot_twin_timeline_verse_time(fig2, f_path)
+    st.plotly_chart(fig2)
 
     # Plot Electron Density and Electron Temperature on the second row
-    with columns[0]:
-        fig3 = go.Figure()
-        plot_on_map_density(fig3, f_path)
-        st.plotly_chart(fig3)
+    fig3 = go.Figure()
+    plot_on_map_density(fig3, f_path)
+    st.plotly_chart(fig3)
 
-    with columns[1]:
-        fig4 = go.Figure()
-        plot_on_map_temperature(fig4, f_path)
-        st.plotly_chart(fig4)
+    fig4 = go.Figure()
+    plot_on_map_temperature(fig4, f_path)
+    st.plotly_chart(fig4)
 
 
 # input a list of file paths

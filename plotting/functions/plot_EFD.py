@@ -28,12 +28,12 @@ import datetime
 
 
 
+
 def plot_EFD(path, multiple):
-    
     try:
         f = xr.open_zarr(path)
     except:
-        f = xr.open_dataset(path, engine = 'h5netcdf', phony_dims = 'sort')
+        f = xr.open_dataset(path, engine='h5netcdf', phony_dims='sort')
     X_Waveform = f['A111_W'][...]
     Y_Waveform = f['A112_W'][...]
     Z_Waveform = f['A113_W'][...]
@@ -72,6 +72,7 @@ def plot_EFD(path, multiple):
     # Ensure vers_extend has the same length as the waveforms
     vers_extend = np.concatenate([np.linspace(verse_time[i], verse_time[i+1], reduced_freq, endpoint=False) for i in range(len_time-1)])
     vers_extend = np.concatenate([vers_extend, np.linspace(verse_time[-2], verse_time[-1], reduced_freq)])
+    
     # First figure for waveforms and magnitude
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=vers_extend, y=X_Waveform, mode='lines', name='X Waveform'))
@@ -110,105 +111,31 @@ def plot_EFD(path, multiple):
  
     # Third figure for power spectra
     power_spectra = {'X': X_Power_spectrum, 'Y': Y_Power_spectrum, 'Z': Z_Power_spectrum}
+
+    for axis, spectrum in power_spectra.items():
+        fig = go.Figure()
+        fig.add_trace(go.Heatmap(
+            z=np.log10(spectrum.T),  # Apply log10 to intensity (z-axis)
+            x=verse_time,
+            y=frequency.values.flatten(),
+            colorscale='Viridis',
+            colorbar=dict(title='Log Power Spectrum')
+        ))
+        fig.update_layout(
+            title=f"{axis} Power Spectrum",
+            xaxis_title="Time (ms)",
+            yaxis_title="Frequency (Hz)",
+            legend=dict(x=1, y=0.5)
+        )
+        if not multiple:
+            st.plotly_chart(fig)
     
-    # for axis, spectrum in power_spectra.items():
-    #     fig = go.Figure()
-    #     fig.add_trace(go.Heatmap(
-    #         z=np.log10(spectrum.values.T),  # Apply log10 to intensity (z-axis)
-    #         x=verse_time,
-    #         y=frequency,
-    #         colorscale='Viridis',
-    #         colorbar=dict(title='Log Power Spectrum')
-    #     ))
-    #     fig.update_layout(
-    #         title=f"{axis} Power Spectrum",
-    #         xaxis_title="Time (ms)",
-    #         yaxis_title="Frequency (Hz)",
-    #         legend=dict(x=1, y=0.5)
-    #     )
-        
-    #     st.plotly_chart(fig)
- 
-    # columns = st.columns(len(power_spectra))
-    # column_widths = [3, 3]
-    # columns = st.columns(column_widths)
-    
-    # for i, (axis, spectrum) in enumerate(power_spectra.items()):
-    #     with columns[i]:
-    #         fig = go.Figure()
-    #         fig.add_trace(go.Heatmap(
-    #             z=np.log10(spectrum.values.T),  # Apply log10 to intensity (z-axis)
-    #             x=verse_time,
-    #             y=frequency,
-    #             colorscale='Viridis',
-    #             colorbar=dict(title='Log Power Spectrum')
-    #         ))
-    #         fig.update_layout(
-    #             title=f"{axis} Power Spectrum",
-    #             xaxis_title="Time (ms)",
-    #             yaxis_title="Frequency (Hz)",
-    #             legend=dict(x=1, y=0.5)
-    #         )
-            
-    #         st.plotly_chart(fig)
-
-    columns = st.columns(2)
-
-    for i, (axis, spectrum) in enumerate(power_spectra.items()):
-        if i < 2:
-            with columns[i]:
-                fig = go.Figure()
-                fig.add_trace(go.Heatmap(
-                    z=np.log10(spectrum.T),  # Apply log10 to intensity (z-axis)
-                    x=verse_time,
-                    y=frequency.values.flatten(),
-                    colorscale='Viridis',
-                    colorbar=dict(title='Log Power Spectrum')
-                ))
-                fig.update_layout(
-                    title=f"{axis} Power Spectrum",
-                    xaxis_title="Time (ms)",
-                    yaxis_title="Frequency (Hz)",
-                    legend=dict(x=1, y=0.5)
-                )
-                if(not multiple):
-                    st.plotly_chart(fig)
-
-    # Display the third graph in a new row, centered
-    if len(power_spectra) > 2:
-        empty_col1, centered_col, empty_col2 = st.columns([1, 2, 1])
-        with centered_col:
-            fig = go.Figure()
-            spectrum = list(power_spectra.values())[2]
-            axis = list(power_spectra.keys())[2]
-            fig.add_trace(go.Heatmap(
-                z=np.log10(spectrum.T),  # Apply log10 to intensity (z-axis)
-                x=verse_time,
-                y=frequency.values.flatten(),
-                colorscale='Viridis',
-                colorbar=dict(title='Log Power Spectrum')
-            ))
-            fig.update_layout(
-                title=f"{axis} Power Spectrum",
-                xaxis_title="Time (ms)",
-                yaxis_title="Frequency (Hz)",
-                legend=dict(x=1, y=0.5)
-            )
-            if(not multiple):
-                st.plotly_chart(fig)
-
+    if multiple:
+        return fig1, fig2
 
     # Display the first two figures
-    col1, col2 = st.columns(2)
-    if(multiple):
-        return fig1, fig2
-    
-    st.write("single file")
-    with col1:
-        st.plotly_chart(fig1)
-
-    with col2:
-        st.plotly_chart(fig2)
+    st.plotly_chart(fig1)
+    st.plotly_chart(fig2)
 
 
 def aggregate_EFD_angles(files, angle_type='polar'):
@@ -355,9 +282,9 @@ def plot_A111_W(fig, path):
         freq = 1
 
     # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
-    data = data.values[1:].flatten()
+    data = data.values[50:].flatten()
     # Remove the first element of the latitude and flatten it
-    latitude = latitude.values[1:].flatten()
+    latitude = latitude.values[50:].flatten()
 
     # Get the length to be able to plot it
     len_lat = len(latitude)
@@ -375,7 +302,7 @@ def plot_A111_W(fig, path):
 
 
     # Configure y-axes
-    fig.update_yaxes(title_text="Hz", secondary_y=False)
+    fig.update_yaxes(title_text="mV/m", secondary_y=False)
 
     if log:
         fig.update_yaxes(type="log", secondary_y=False)
@@ -411,9 +338,9 @@ def plot_A112_W(fig, path):
         freq = 1
 
     # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
-    data = data.values[1:].flatten()
+    data = data.values[50:].flatten()
     # Remove the first element of the latitude and flatten it
-    latitude = latitude.values[1:].flatten()
+    latitude = latitude.values[50:].flatten()
 
     # Get the length to be able to plot it
     len_lat = len(latitude)
@@ -427,11 +354,12 @@ def plot_A112_W(fig, path):
         go.Scatter(x=lat_extend, y=data, name="Y-Waveform", line=dict(color='blue')),
         secondary_y=False
     )
+    
 
 
 
     # Configure y-axes
-    fig.update_yaxes(title_text="Hz", secondary_y=False)
+    fig.update_yaxes(title_text="mV/m", secondary_y=False)
 
     if log:
         fig.update_yaxes(type="log", secondary_y=False)
@@ -453,7 +381,10 @@ def plot_A113_W(fig, path):
     # Extract the required variables
     latitude = f['GEO_LAT'][...]
     data = f['A113_W'][...]
+    data_max = data.max()
+    data_min = data.min()
 
+    
 
     # Reduce the frequency of the data
     data = reduce_frequency(data, 1)
@@ -467,9 +398,9 @@ def plot_A113_W(fig, path):
         freq = 1
 
     # Remove the first element of the data (it sometimes gives weird values) and flatten it to be able to plot it
-    data = data.values[1:].flatten()
+    data = data.values[50:].flatten()
     # Remove the first element of the latitude and flatten it
-    latitude = latitude.values[1:].flatten()
+    latitude = latitude.values[50:].flatten()
 
     # Get the length to be able to plot it
     len_lat = len(latitude)
@@ -483,11 +414,15 @@ def plot_A113_W(fig, path):
         go.Scatter(x=lat_extend, y=data, name="Z-Waveform", line=dict(color='blue')),
         secondary_y=False
     )
+    
+    # Configure y-axis
+    fig.update_yaxes(title_text="Hz", secondary_y=False, range=[data_min, data_max])
+    
 
 
 
     # Configure y-axes
-    fig.update_yaxes(title_text="Hz", secondary_y=False)
+    fig.update_yaxes(title_text="mV/m", secondary_y=False)
 
     if log:
         fig.update_yaxes(type="log", secondary_y=False)

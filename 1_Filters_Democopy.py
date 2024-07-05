@@ -9,8 +9,8 @@ from scipy.stats import skew, kurtosis, t
 import streamlit as st
 from streamlit_folium import st_folium
 import datetime
-st.markdown("# Plotting Demo")
-st.sidebar.header("Plotting Demo")
+st.markdown("# Filtering")
+st.sidebar.header("Filtering")
 
 #progress_bar = st.sidebar.progress(0)
 status_text = st.sidebar.empty()
